@@ -12,6 +12,8 @@ import CarDetails from "./pages/CarDetails.tsx";
 import ListCar from "./pages/ListCar.tsx";
 import MyCars from "./pages/MyCars.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
+import MyBookings from "./pages/MyBookings.tsx";
+import Trips from "./pages/Trips.tsx";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +32,8 @@ const App = () => (
           <Route path="/list-car" element={<ListCar />} />
           <Route path="/my-cars" element={<MyCars />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/my-bookings" element={<MyBookings />} />
+          <Route path="/trips" element={<Trips />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

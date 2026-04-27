@@ -5,7 +5,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Car, KeyRound, Briefcase, Shield, Loader2, Search, Plus } from "lucide-react";
+import { Car, KeyRound, Briefcase, Shield, Loader2, Search, Plus, Receipt, ClipboardList } from "lucide-react";
 
 const Dashboard = () => {
   const { user, roles, loading } = useAuth();
@@ -64,10 +64,21 @@ const Dashboard = () => {
             </>
           )}
 
-          <Card className="p-6 bg-card/40 border-dashed border-border/60">
-            <h3 className="font-serif text-xl mb-1 text-muted-foreground">Bookings</h3>
-            <p className="text-sm text-muted-foreground/70">Coming in Phase 2 — date selection, dynamic pricing and Stripe checkout.</p>
+          <Card className="p-6 bg-card border-border/60 hover:border-primary/40 transition-smooth">
+            <Receipt className="w-6 h-6 text-primary mb-3" />
+            <h3 className="font-serif text-xl mb-1">My bookings</h3>
+            <p className="text-sm text-muted-foreground mb-4">View upcoming trips, history and receipts.</p>
+            <Button asChild variant="outlineGold" size="sm" className="w-full"><Link to="/my-bookings">Open</Link></Button>
           </Card>
+
+          {roles.includes("owner") && (
+            <Card className="p-6 bg-card border-border/60 hover:border-primary/40 transition-smooth">
+              <ClipboardList className="w-6 h-6 text-primary mb-3" />
+              <h3 className="font-serif text-xl mb-1">Trips on my fleet</h3>
+              <p className="text-sm text-muted-foreground mb-4">Confirm trip completion and release escrow.</p>
+              <Button asChild variant="outlineGold" size="sm" className="w-full"><Link to="/trips">Open</Link></Button>
+            </Card>
+          )}
           {roles.includes("driver") && (
             <Card className="p-6 bg-card/40 border-dashed border-border/60">
               <h3 className="font-serif text-xl mb-1 text-muted-foreground">Driver trips</h3>

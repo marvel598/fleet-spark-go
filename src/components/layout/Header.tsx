@@ -7,8 +7,10 @@ import { cn } from "@/lib/utils";
 
 const navItems = [
   { to: "/browse", label: "Browse Cars" },
+  { to: "/my-bookings", label: "My Bookings", requireAuth: true },
   { to: "/list-car", label: "List Your Car", requireRole: "owner" as const },
   { to: "/my-cars", label: "My Cars", requireRole: "owner" as const },
+  { to: "/trips", label: "Trips", requireRole: "owner" as const },
   { to: "/dashboard", label: "Dashboard", requireAuth: true },
 ];
 
