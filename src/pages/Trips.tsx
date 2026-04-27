@@ -73,6 +73,17 @@ const Trips = () => {
     fetchAll();
   };
 
+  const confirmPayment = async (id: string) => {
+    const now = new Date().toISOString();
+    const { error } = await supabase.from("bookings").update({
+      status: "confirmed",
+      payment_confirmed_at: now,
+    }).eq("id", id);
+    if (error) return toast.error(error.message);
+    toast.success("Payment confirmed", { description: "Booking is now confirmed." });
+    fetchAll();
+  };
+
   if (authLoading || loading) return <Layout><div className="container py-20 flex justify-center"><Loader2 className="w-6 h-6 text-primary animate-spin" /></div></Layout>;
 
   return (
@@ -99,14 +110,25 @@ const Trips = () => {
                   </div>
                   <Badge variant="outline" className="border-primary/40 text-primary">{b.status.replace("_", " ")}</Badge>
                 </div>
-                <div className="flex items-center justify-between pt-3 border-t border-border/40">
+                <div className="flex items-center justify-between pt-3 border-t border-border/40 gap-3 flex-wrap">
                   <div className="text-sm">
                     <div className="text-muted-foreground">Your payout</div>
                     <div className="text-primary font-serif text-xl">${b.owner_payout}</div>
+                    {b.payment_reference && (
+                      <div className="text-xs text-muted-foreground mt-1">Ref: <span className="text-foreground font-mono">{b.payment_reference}</span></div>
+                    )}
                   </div>
-                  {b.status === "confirmed" && (
-                    <Button variant="gold" size="sm" onClick={() => completeTrip(b.id)}>Mark trip completed</Button>
-                  )}
+                  <div className="flex gap-2">
+                    {b.status === "pending_payment" && b.payment_reference && (
+                      <Button variant="gold" size="sm" onClick={() => confirmPayment(b.id)}>Confirm payment received</Button>
+                    )}
+                    {b.status === "pending_payment" && !b.payment_reference && (
+                      <span className="text-xs text-muted-foreground self-center">Awaiting renter payment</span>
+                    )}
+                    {b.status === "confirmed" && (
+                      <Button variant="gold" size="sm" onClick={() => completeTrip(b.id)}>Mark trip completed</Button>
+                    )}
+                  </div>
                 </div>
               </Card>
             ))}
