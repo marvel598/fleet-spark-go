@@ -43,7 +43,7 @@ const Trips = () => {
 
     const rows = (data as any) ?? [];
     // Hydrate renter names
-    const renterIds = [...new Set(rows.map((r: BookingRow) => r.renter_id))];
+    const renterIds = Array.from(new Set(rows.map((r: BookingRow) => r.renter_id))) as string[];
     if (renterIds.length) {
       const { data: profs } = await supabase.from("profiles").select("id, full_name").in("id", renterIds);
       const map = new Map(profs?.map((p) => [p.id, p]) ?? []);
