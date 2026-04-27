@@ -27,6 +27,11 @@ export type Database = {
           owner_confirmed_at: string | null
           owner_id: string
           owner_payout: number
+          payment_confirmed_at: string | null
+          payment_method: string
+          payment_phone: string | null
+          payment_reference: string | null
+          payment_submitted_at: string | null
           renter_confirmed_at: string | null
           renter_id: string
           service_fee: number
@@ -50,6 +55,11 @@ export type Database = {
           owner_confirmed_at?: string | null
           owner_id: string
           owner_payout: number
+          payment_confirmed_at?: string | null
+          payment_method?: string
+          payment_phone?: string | null
+          payment_reference?: string | null
+          payment_submitted_at?: string | null
           renter_confirmed_at?: string | null
           renter_id: string
           service_fee: number
@@ -73,6 +83,11 @@ export type Database = {
           owner_confirmed_at?: string | null
           owner_id?: string
           owner_payout?: number
+          payment_confirmed_at?: string | null
+          payment_method?: string
+          payment_phone?: string | null
+          payment_reference?: string | null
+          payment_submitted_at?: string | null
           renter_confirmed_at?: string | null
           renter_id?: string
           service_fee?: number
