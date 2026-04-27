@@ -1,16 +1,22 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { CalendarIcon, Loader2, Copy, Check } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { calculatePrice, daysBetween } from "@/lib/pricing";
+import { PAYMENT_INSTRUCTIONS } from "@/lib/payment";
 
 interface Props {
   carId: string;
@@ -23,6 +29,10 @@ export function BookingWidget({ carId, ownerId, dailyRate }: Props) {
   const navigate = useNavigate();
   const [range, setRange] = useState<DateRange | undefined>();
   const [submitting, setSubmitting] = useState(false);
+  const [payOpen, setPayOpen] = useState(false);
+  const [reference, setReference] = useState("");
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const isSelf = user?.id === ownerId;
 
@@ -32,18 +42,14 @@ export function BookingWidget({ carId, ownerId, dailyRate }: Props) {
     return { days, ...calculatePrice(dailyRate, days) };
   }, [range, dailyRate]);
 
-  const handleBook = async () => {
-    if (!user) {
-      navigate("/login");
-      return;
-    }
+  const handleStartBooking = async () => {
+    if (!user) { navigate("/login"); return; }
     if (!range?.from || !range?.to || !breakdown) {
       toast.error("Please select check-in and check-out dates.");
       return;
     }
     setSubmitting(true);
 
-    // Availability check
     const { data: available, error: availErr } = await supabase.rpc("check_car_availability", {
       _car_id: carId,
       _start: format(range.from, "yyyy-MM-dd"),
@@ -67,7 +73,9 @@ export function BookingWidget({ carId, ownerId, dailyRate }: Props) {
       service_fee: breakdown.serviceFee,
       total: breakdown.total,
       owner_payout: breakdown.ownerPayout,
-      status: "confirmed", // payment integration will later transition pending_payment -> confirmed
+      status: "pending_payment",
+      payment_method: "manual",
+      payment_phone: PAYMENT_INSTRUCTIONS.phone,
     }).select().single();
 
     if (error) {
@@ -76,7 +84,6 @@ export function BookingWidget({ carId, ownerId, dailyRate }: Props) {
       return;
     }
 
-    // Create escrow record
     await supabase.from("escrow_transactions").insert({
       booking_id: booking.id,
       amount: breakdown.total,
@@ -85,8 +92,30 @@ export function BookingWidget({ carId, ownerId, dailyRate }: Props) {
       status: "held",
     });
 
-    toast.success("Booking confirmed", { description: "Funds are held in escrow until trip completion." });
+    setBookingId(booking.id);
+    setPayOpen(true);
+    setSubmitting(false);
+  };
+
+  const submitReference = async () => {
+    if (!bookingId) return;
+    if (!reference.trim()) { toast.error("Enter the transaction reference."); return; }
+    setSubmitting(true);
+    const { error } = await supabase.from("bookings").update({
+      payment_reference: reference.trim(),
+      payment_submitted_at: new Date().toISOString(),
+    }).eq("id", bookingId);
+    setSubmitting(false);
+    if (error) return toast.error(error.message);
+    setPayOpen(false);
+    toast.success("Payment submitted", { description: "The host will confirm shortly." });
     navigate("/my-bookings");
+  };
+
+  const copyPhone = async () => {
+    await navigator.clipboard.writeText(PAYMENT_INSTRUCTIONS.phone);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
   };
 
   return (
@@ -113,8 +142,8 @@ export function BookingWidget({ carId, ownerId, dailyRate }: Props) {
         </PopoverContent>
       </Popover>
 
-      <Button variant="hero" size="lg" className="w-full mb-3" onClick={handleBook} disabled={submitting || isSelf}>
-        {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : isSelf ? "This is your car" : "Book this car"}
+      <Button variant="hero" size="lg" className="w-full mb-3" onClick={handleStartBooking} disabled={submitting || isSelf}>
+        {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : isSelf ? "This is your car" : "Reserve & pay"}
       </Button>
 
       <div className="hairline-gold my-6" />
@@ -135,6 +164,46 @@ export function BookingWidget({ carId, ownerId, dailyRate }: Props) {
           <span className="text-primary text-lg">${breakdown?.total.toFixed(2) ?? "0.00"}</span>
         </div>
       </div>
+
+      <Dialog open={payOpen} onOpenChange={setPayOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif text-2xl">Complete your payment</DialogTitle>
+            <DialogDescription>
+              Send <span className="text-primary font-medium">${breakdown?.total.toFixed(2)}</span> via {PAYMENT_INSTRUCTIONS.method}, then enter the reference below.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="rounded-lg border border-primary/30 bg-primary/5 p-4">
+            <div className="text-xs uppercase tracking-widest text-muted-foreground mb-1">Send to</div>
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="font-serif text-2xl text-primary">{PAYMENT_INSTRUCTIONS.phone}</div>
+                <div className="text-xs text-muted-foreground">{PAYMENT_INSTRUCTIONS.name}</div>
+              </div>
+              <Button variant="outline" size="sm" onClick={copyPhone}>
+                {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              </Button>
+            </div>
+          </div>
+
+          <ol className="list-decimal list-inside space-y-1.5 text-sm text-muted-foreground">
+            {PAYMENT_INSTRUCTIONS.steps.map((s) => <li key={s}>{s}</li>)}
+          </ol>
+
+          <div className="space-y-2">
+            <Label htmlFor="ref">Transaction reference / M-Pesa code</Label>
+            <Input id="ref" placeholder="e.g. SLA7XK29MN" value={reference} onChange={(e) => setReference(e.target.value.toUpperCase())} />
+          </div>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setPayOpen(false)}>I'll pay later</Button>
+            <Button variant="gold" onClick={submitReference} disabled={submitting}>
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "Submit payment"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
