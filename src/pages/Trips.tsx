@@ -18,6 +18,9 @@ interface BookingRow {
   owner_payout: number;
   status: string;
   renter_id: string;
+  payment_reference: string | null;
+  payment_submitted_at: string | null;
+  payment_confirmed_at: string | null;
   cars: { make: string; model: string; year: number } | null;
   profiles?: { full_name: string | null } | null;
 }
@@ -37,7 +40,7 @@ const Trips = () => {
     if (!user) return;
     const { data } = await supabase
       .from("bookings")
-      .select("id, start_date, end_date, total, owner_payout, status, renter_id, cars(make, model, year)")
+      .select("id, start_date, end_date, total, owner_payout, status, renter_id, payment_reference, payment_submitted_at, payment_confirmed_at, cars(make, model, year)")
       .eq("owner_id", user.id)
       .order("start_date", { ascending: false });
 
