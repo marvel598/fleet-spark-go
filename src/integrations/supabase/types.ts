@@ -14,6 +14,86 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          cancellation_reason: string | null
+          cancelled_at: string | null
+          car_id: string
+          created_at: string
+          daily_rate: number
+          days: number
+          end_date: string
+          id: string
+          owner_confirmed_at: string | null
+          owner_id: string
+          owner_payout: number
+          renter_confirmed_at: string | null
+          renter_id: string
+          service_fee: number
+          start_date: string
+          status: Database["public"]["Enums"]["booking_status"]
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          subtotal: number
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          car_id: string
+          created_at?: string
+          daily_rate: number
+          days: number
+          end_date: string
+          id?: string
+          owner_confirmed_at?: string | null
+          owner_id: string
+          owner_payout: number
+          renter_confirmed_at?: string | null
+          renter_id: string
+          service_fee: number
+          start_date: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          subtotal: number
+          total: number
+          updated_at?: string
+        }
+        Update: {
+          cancellation_reason?: string | null
+          cancelled_at?: string | null
+          car_id?: string
+          created_at?: string
+          daily_rate?: number
+          days?: number
+          end_date?: string
+          id?: string
+          owner_confirmed_at?: string | null
+          owner_id?: string
+          owner_payout?: number
+          renter_confirmed_at?: string | null
+          renter_id?: string
+          service_fee?: number
+          start_date?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          subtotal?: number
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cars: {
         Row: {
           created_at: string
@@ -74,6 +154,56 @@ export type Database = {
         }
         Relationships: []
       }
+      escrow_transactions: {
+        Row: {
+          amount: number
+          booking_id: string
+          created_at: string
+          held_at: string | null
+          id: string
+          owner_payout: number
+          refunded_at: string | null
+          released_at: string | null
+          service_fee: number
+          status: Database["public"]["Enums"]["escrow_status"]
+          stripe_payment_intent_id: string | null
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          created_at?: string
+          held_at?: string | null
+          id?: string
+          owner_payout: number
+          refunded_at?: string | null
+          released_at?: string | null
+          service_fee: number
+          status?: Database["public"]["Enums"]["escrow_status"]
+          stripe_payment_intent_id?: string | null
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          created_at?: string
+          held_at?: string | null
+          id?: string
+          owner_payout?: number
+          refunded_at?: string | null
+          released_at?: string | null
+          service_fee?: number
+          status?: Database["public"]["Enums"]["escrow_status"]
+          stripe_payment_intent_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "escrow_transactions_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -107,6 +237,51 @@ export type Database = {
         }
         Relationships: []
       }
+      reviews: {
+        Row: {
+          booking_id: string
+          car_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          rating: number
+          renter_id: string
+        }
+        Insert: {
+          booking_id: string
+          car_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating: number
+          renter_id: string
+        }
+        Update: {
+          booking_id?: string
+          car_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          rating?: number
+          renter_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: true
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -133,6 +308,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_car_availability: {
+        Args: { _car_id: string; _end: string; _start: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -143,7 +322,15 @@ export type Database = {
     }
     Enums: {
       app_role: "renter" | "owner" | "driver" | "admin"
+      booking_status:
+        | "pending_payment"
+        | "confirmed"
+        | "active"
+        | "completed"
+        | "cancelled"
+        | "disputed"
       car_status: "draft" | "active" | "paused"
+      escrow_status: "held" | "released" | "refunded"
       fuel_type: "petrol" | "diesel" | "hybrid" | "electric"
       transmission_type: "automatic" | "manual"
     }
@@ -274,7 +461,16 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["renter", "owner", "driver", "admin"],
+      booking_status: [
+        "pending_payment",
+        "confirmed",
+        "active",
+        "completed",
+        "cancelled",
+        "disputed",
+      ],
       car_status: ["draft", "active", "paused"],
+      escrow_status: ["held", "released", "refunded"],
       fuel_type: ["petrol", "diesel", "hybrid", "electric"],
       transmission_type: ["automatic", "manual"],
     },

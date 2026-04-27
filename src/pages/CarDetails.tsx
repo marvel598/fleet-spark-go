@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Loader2, MapPin, Users, Fuel, Settings2, Calendar, ArrowLeft } from "lucide-react";
+import { BookingWidget } from "@/components/bookings/BookingWidget";
 
 interface FullCar {
   id: string;
@@ -122,18 +123,7 @@ const CarDetails = () => {
               </div>
               <div className="text-xs text-muted-foreground uppercase tracking-widest mb-6">Hosted by {ownerName}</div>
 
-              <Button variant="hero" size="lg" className="w-full mb-3" disabled>
-                Book this car
-              </Button>
-              <p className="text-xs text-muted-foreground text-center">Bookings & payments coming in Phase 2.</p>
-
-              <div className="hairline-gold my-6" />
-
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between text-muted-foreground"><span>Daily rate</span><span className="text-foreground">${car.daily_price}</span></div>
-                <div className="flex justify-between text-muted-foreground"><span>Service fee</span><span className="text-foreground">10%</span></div>
-                <div className="flex justify-between text-muted-foreground"><span>Protection</span><span className="text-primary">Included</span></div>
-              </div>
+              <BookingWidget carId={car.id} ownerId={car.owner_id} dailyRate={Number(car.daily_price)} />
             </Card>
           </div>
         </div>
