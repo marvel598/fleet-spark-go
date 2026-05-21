@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -57,6 +58,7 @@ const MyCars = () => {
 
   return (
     <Layout>
+      <Seo title="My cars — AurumDrive host dashboard" description="Manage your AurumDrive listings: pause, activate, edit and track your vehicles." path="/my-cars" noindex />
       <div className="container py-12">
         <div className="flex items-end justify-between mb-10 flex-wrap gap-4">
           <div>
@@ -82,7 +84,7 @@ const MyCars = () => {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-serif text-xl">{car.make} {car.model}</h3>
+                    <h2 className="font-serif text-xl">{car.make} {car.model}</h2>
                     <Badge variant={car.status === "active" ? "default" : "outline"} className={car.status === "active" ? "bg-primary/20 text-primary border-primary/40" : ""}>{car.status}</Badge>
                   </div>
                   <div className="text-sm text-muted-foreground">{car.year} · {car.location} · ${car.daily_price}/day</div>
@@ -91,9 +93,9 @@ const MyCars = () => {
                   <Button variant="ghost" size="sm" onClick={() => toggleStatus(car)}>
                     {car.status === "active" ? "Pause" : "Activate"}
                   </Button>
-                  <Button variant="ghost" size="icon" asChild title="Tracking"><Link to={`/cars/${car.id}/tracking`}><MapPin className="w-4 h-4" /></Link></Button>
-                  <Button variant="ghost" size="icon" asChild><Link to={`/cars/${car.id}`}><Pencil className="w-4 h-4" /></Link></Button>
-                  <Button variant="ghost" size="icon" onClick={() => deleteCar(car.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
+                  <Button variant="ghost" size="icon" asChild aria-label={`Track ${car.make} ${car.model}`}><Link to={`/cars/${car.id}/tracking`}><MapPin className="w-4 h-4" /></Link></Button>
+                  <Button variant="ghost" size="icon" asChild aria-label={`Edit ${car.make} ${car.model}`}><Link to={`/cars/${car.id}`}><Pencil className="w-4 h-4" /></Link></Button>
+                  <Button variant="ghost" size="icon" onClick={() => deleteCar(car.id)} aria-label={`Delete ${car.make} ${car.model}`}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                 </div>
               </Card>
             ))}

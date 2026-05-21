@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -88,6 +89,7 @@ const Trips = () => {
 
   return (
     <Layout>
+      <Seo title="Trips on your cars — AurumDrive host" description="Manage incoming bookings, confirm payments, and complete trips on your AurumDrive listings." path="/trips" noindex />
       <div className="container py-12">
         <span className="text-xs uppercase tracking-widest text-primary">Host</span>
         <h1 className="text-5xl font-serif mt-3 mb-8">Trips on your cars</h1>
@@ -102,7 +104,7 @@ const Trips = () => {
               <Card key={b.id} className="p-5 bg-card border-border/60">
                 <div className="flex items-start justify-between gap-3 mb-3">
                   <div>
-                    <h3 className="font-serif text-2xl">{b.cars?.make} {b.cars?.model} <span className="text-muted-foreground text-base">{b.cars?.year}</span></h3>
+                    <h2 className="font-serif text-2xl">{b.cars?.make} {b.cars?.model} <span className="text-muted-foreground text-base">{b.cars?.year}</span></h2>
                     <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-2">
                       <span className="flex items-center gap-1.5"><User className="w-3.5 h-3.5" /> {b.profiles?.full_name || "Renter"}</span>
                       <span className="flex items-center gap-1.5"><Calendar className="w-3.5 h-3.5" /> {format(new Date(b.start_date), "MMM d")} – {format(new Date(b.end_date), "MMM d, yyyy")}</span>

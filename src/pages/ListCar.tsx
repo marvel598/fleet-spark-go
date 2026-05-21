@@ -4,6 +4,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -109,6 +110,7 @@ const ListCar = () => {
 
   return (
     <Layout>
+      <Seo title="List your car — AurumDrive" description="Earn from your car by listing it on AurumDrive. Set your price, manage availability, get paid securely." path="/list-car" noindex />
       <div className="container max-w-3xl py-12">
         <div className="mb-10">
           <span className="text-xs uppercase tracking-widest text-primary">New listing</span>
@@ -118,16 +120,16 @@ const ListCar = () => {
 
         <Card className="p-8 bg-card/60 border-border/60 space-y-6">
           <div className="grid sm:grid-cols-2 gap-4">
-            <div><Label>Make</Label><Input value={make} onChange={(e) => setMake(e.target.value)} placeholder="Tesla" maxLength={60} className="mt-1.5" /></div>
-            <div><Label>Model</Label><Input value={model} onChange={(e) => setModel(e.target.value)} placeholder="Model S" maxLength={60} className="mt-1.5" /></div>
-            <div><Label>Year</Label><Input type="number" value={year} onChange={(e) => setYear(e.target.value)} className="mt-1.5" /></div>
-            <div><Label>Daily price (USD)</Label><Input type="number" value={dailyPrice} onChange={(e) => setDailyPrice(e.target.value)} placeholder="120" className="mt-1.5" /></div>
-            <div><Label>Location</Label><Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="San Francisco, CA" maxLength={120} className="mt-1.5" /></div>
-            <div><Label>Seats</Label><Input type="number" value={seats} onChange={(e) => setSeats(e.target.value)} className="mt-1.5" /></div>
+            <div><Label htmlFor="lc-make">Make</Label><Input id="lc-make" value={make} onChange={(e) => setMake(e.target.value)} placeholder="Tesla" maxLength={60} className="mt-1.5" /></div>
+            <div><Label htmlFor="lc-model">Model</Label><Input id="lc-model" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Model S" maxLength={60} className="mt-1.5" /></div>
+            <div><Label htmlFor="lc-year">Year</Label><Input id="lc-year" type="number" value={year} onChange={(e) => setYear(e.target.value)} className="mt-1.5" /></div>
+            <div><Label htmlFor="lc-price">Daily price (USD)</Label><Input id="lc-price" type="number" value={dailyPrice} onChange={(e) => setDailyPrice(e.target.value)} placeholder="120" className="mt-1.5" /></div>
+            <div><Label htmlFor="lc-location">Location</Label><Input id="lc-location" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="San Francisco, CA" maxLength={120} className="mt-1.5" /></div>
+            <div><Label htmlFor="lc-seats">Seats</Label><Input id="lc-seats" type="number" value={seats} onChange={(e) => setSeats(e.target.value)} className="mt-1.5" /></div>
             <div>
-              <Label>Transmission</Label>
+              <Label htmlFor="lc-transmission">Transmission</Label>
               <Select value={transmission} onValueChange={(v) => setTransmission(v as typeof transmission)}>
-                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="lc-transmission" className="mt-1.5"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="automatic">Automatic</SelectItem>
                   <SelectItem value="manual">Manual</SelectItem>
@@ -135,9 +137,9 @@ const ListCar = () => {
               </Select>
             </div>
             <div>
-              <Label>Fuel type</Label>
+              <Label htmlFor="lc-fuel">Fuel type</Label>
               <Select value={fuelType} onValueChange={(v) => setFuelType(v as typeof fuelType)}>
-                <SelectTrigger className="mt-1.5"><SelectValue /></SelectTrigger>
+                <SelectTrigger id="lc-fuel" className="mt-1.5"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="petrol">Petrol</SelectItem>
                   <SelectItem value="diesel">Diesel</SelectItem>
@@ -149,8 +151,8 @@ const ListCar = () => {
           </div>
 
           <div>
-            <Label>Description</Label>
-            <Textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Tell renters what makes this car special..." maxLength={2000} className="mt-1.5 min-h-[120px]" />
+            <Label htmlFor="lc-description">Description</Label>
+            <Textarea id="lc-description" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Tell renters what makes this car special..." maxLength={2000} className="mt-1.5 min-h-[120px]" />
           </div>
 
           <div>

@@ -32,7 +32,7 @@ export function CarCard({ car }: { car: CarSummary }) {
           </div>
         </div>
         <div className="p-5">
-          <h3 className="font-serif text-xl mb-1">{car.make} {car.model}</h3>
+          <h2 className="font-serif text-xl mb-1">{car.make} {car.model}</h2>
           <div className="text-xs text-muted-foreground mb-3 flex items-center gap-1.5">
             <MapPin className="w-3 h-3" /> {car.location} · {car.year}
           </div>

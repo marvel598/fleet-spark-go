@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -70,6 +71,7 @@ const MyBookings = () => {
 
   return (
     <Layout>
+      <Seo title="My bookings — AurumDrive trips" description="View your upcoming and past car rentals on AurumDrive." path="/my-bookings" noindex />
       <div className="container py-12">
         <span className="text-xs uppercase tracking-widest text-primary">Trips</span>
         <h1 className="text-5xl font-serif mt-3 mb-8">My bookings</h1>
@@ -90,7 +92,7 @@ const MyBookings = () => {
                 </Link>
                 <div className="flex-1">
                   <div className="flex items-start justify-between gap-3 mb-2">
-                    <h3 className="font-serif text-2xl">{b.cars?.make} {b.cars?.model} <span className="text-muted-foreground text-base">{b.cars?.year}</span></h3>
+                    <h2 className="font-serif text-2xl">{b.cars?.make} {b.cars?.model} <span className="text-muted-foreground text-base">{b.cars?.year}</span></h2>
                     <Badge variant="outline" className={statusVariant[b.status] ?? ""}>{b.status.replace("_", " ")}</Badge>
                   </div>
                   <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3">
