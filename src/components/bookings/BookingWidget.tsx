@@ -153,10 +153,6 @@ export function BookingWidget({ carId, ownerId, dailyRate }: Props) {
           <span>${dailyRate} × {breakdown?.days ?? 0} {breakdown?.days === 1 ? "day" : "days"}</span>
           <span className="text-foreground">${breakdown?.subtotal.toFixed(2) ?? "0.00"}</span>
         </div>
-        <div className="flex justify-between text-muted-foreground">
-          <span>Service fee (10%)</span>
-          <span className="text-foreground">${breakdown?.serviceFee.toFixed(2) ?? "0.00"}</span>
-        </div>
         <div className="flex justify-between text-muted-foreground"><span>Protection</span><span className="text-primary">Included</span></div>
         <div className="hairline-gold my-3" />
         <div className="flex justify-between font-medium">
