@@ -32,8 +32,14 @@ export type Database = {
           payment_phone: string | null
           payment_reference: string | null
           payment_submitted_at: string | null
+          pickup_lat: number | null
+          pickup_lng: number | null
+          pickup_odometer: number | null
           renter_confirmed_at: string | null
           renter_id: string
+          return_lat: number | null
+          return_lng: number | null
+          return_odometer: number | null
           service_fee: number
           start_date: string
           status: Database["public"]["Enums"]["booking_status"]
@@ -60,8 +66,14 @@ export type Database = {
           payment_phone?: string | null
           payment_reference?: string | null
           payment_submitted_at?: string | null
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          pickup_odometer?: number | null
           renter_confirmed_at?: string | null
           renter_id: string
+          return_lat?: number | null
+          return_lng?: number | null
+          return_odometer?: number | null
           service_fee: number
           start_date: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -88,8 +100,14 @@ export type Database = {
           payment_phone?: string | null
           payment_reference?: string | null
           payment_submitted_at?: string | null
+          pickup_lat?: number | null
+          pickup_lng?: number | null
+          pickup_odometer?: number | null
           renter_confirmed_at?: string | null
           renter_id?: string
+          return_lat?: number | null
+          return_lng?: number | null
+          return_odometer?: number | null
           service_fee?: number
           start_date?: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -112,11 +130,15 @@ export type Database = {
       cars: {
         Row: {
           created_at: string
+          current_lat: number | null
+          current_lng: number | null
+          current_odometer: number | null
           daily_price: number
           description: string | null
           features: string[] | null
           fuel_type: Database["public"]["Enums"]["fuel_type"]
           id: string
+          last_location_update: string | null
           license_plate: string | null
           location: string
           make: string
@@ -125,17 +147,23 @@ export type Database = {
           photos: string[] | null
           seats: number
           status: Database["public"]["Enums"]["car_status"]
+          tracking_enabled: boolean
           transmission: Database["public"]["Enums"]["transmission_type"]
           updated_at: string
+          vehicle_status: Database["public"]["Enums"]["vehicle_status"]
           year: number
         }
         Insert: {
           created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          current_odometer?: number | null
           daily_price: number
           description?: string | null
           features?: string[] | null
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
           id?: string
+          last_location_update?: string | null
           license_plate?: string | null
           location: string
           make: string
@@ -144,17 +172,23 @@ export type Database = {
           photos?: string[] | null
           seats?: number
           status?: Database["public"]["Enums"]["car_status"]
+          tracking_enabled?: boolean
           transmission?: Database["public"]["Enums"]["transmission_type"]
           updated_at?: string
+          vehicle_status?: Database["public"]["Enums"]["vehicle_status"]
           year: number
         }
         Update: {
           created_at?: string
+          current_lat?: number | null
+          current_lng?: number | null
+          current_odometer?: number | null
           daily_price?: number
           description?: string | null
           features?: string[] | null
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
           id?: string
+          last_location_update?: string | null
           license_plate?: string | null
           location?: string
           make?: string
@@ -163,8 +197,10 @@ export type Database = {
           photos?: string[] | null
           seats?: number
           status?: Database["public"]["Enums"]["car_status"]
+          tracking_enabled?: boolean
           transmission?: Database["public"]["Enums"]["transmission_type"]
           updated_at?: string
+          vehicle_status?: Database["public"]["Enums"]["vehicle_status"]
           year?: number
         }
         Relationships: []
@@ -297,6 +333,42 @@ export type Database = {
           },
         ]
       }
+      tracking_logs: {
+        Row: {
+          booking_id: string | null
+          car_id: string
+          heading: number | null
+          id: string
+          lat: number
+          lng: number
+          odometer: number | null
+          recorded_at: string
+          speed_kmh: number | null
+        }
+        Insert: {
+          booking_id?: string | null
+          car_id: string
+          heading?: number | null
+          id?: string
+          lat: number
+          lng: number
+          odometer?: number | null
+          recorded_at?: string
+          speed_kmh?: number | null
+        }
+        Update: {
+          booking_id?: string | null
+          car_id?: string
+          heading?: number | null
+          id?: string
+          lat?: number
+          lng?: number
+          odometer?: number | null
+          recorded_at?: string
+          speed_kmh?: number | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -348,6 +420,12 @@ export type Database = {
       escrow_status: "held" | "released" | "refunded"
       fuel_type: "petrol" | "diesel" | "hybrid" | "electric"
       transmission_type: "automatic" | "manual"
+      vehicle_status:
+        | "parked"
+        | "on_rent"
+        | "in_transit"
+        | "maintenance"
+        | "offline"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -488,6 +566,13 @@ export const Constants = {
       escrow_status: ["held", "released", "refunded"],
       fuel_type: ["petrol", "diesel", "hybrid", "electric"],
       transmission_type: ["automatic", "manual"],
+      vehicle_status: [
+        "parked",
+        "on_rent",
+        "in_transit",
+        "maintenance",
+        "offline",
+      ],
     },
   },
 } as const
