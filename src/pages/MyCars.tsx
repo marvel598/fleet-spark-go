@@ -6,7 +6,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, Pencil, Trash2 } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, MapPin } from "lucide-react";
 import { toast } from "sonner";
 
 interface MyCar {
@@ -91,6 +91,7 @@ const MyCars = () => {
                   <Button variant="ghost" size="sm" onClick={() => toggleStatus(car)}>
                     {car.status === "active" ? "Pause" : "Activate"}
                   </Button>
+                  <Button variant="ghost" size="icon" asChild title="Tracking"><Link to={`/cars/${car.id}/tracking`}><MapPin className="w-4 h-4" /></Link></Button>
                   <Button variant="ghost" size="icon" asChild><Link to={`/cars/${car.id}`}><Pencil className="w-4 h-4" /></Link></Button>
                   <Button variant="ghost" size="icon" onClick={() => deleteCar(car.id)}><Trash2 className="w-4 h-4 text-destructive" /></Button>
                 </div>
