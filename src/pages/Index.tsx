@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Shield, MapPin, Sparkles, KeyRound, Car as CarIcon } from "lucide-react";
 import heroCar from "@/assets/hero-car.jpg";
@@ -7,10 +8,15 @@ import heroCar from "@/assets/hero-car.jpg";
 const Index = () => {
   return (
     <Layout>
+      <Seo
+        title="AurumDrive — Premium peer-to-peer car hire in Nairobi"
+        description="Rent vetted cars from trusted owners, hire drivers and book fleets. Escrow-protected payments and live trip tracking on AurumDrive."
+        path="/"
+      />
       {/* HERO */}
       <section className="relative min-h-[90vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroCar} alt="Premium luxury car at night" width={1920} height={1080} className="w-full h-full object-cover opacity-60" />
+          <img src={heroCar} alt="Premium luxury car at night" width={1920} height={1080} fetchPriority="high" className="w-full h-full object-cover opacity-60" />
           <div className="absolute inset-0 bg-gradient-hero-fade" />
           <div className="absolute inset-0 bg-gradient-radial-gold" />
         </div>

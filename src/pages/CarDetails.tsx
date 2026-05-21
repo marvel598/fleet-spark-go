@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -48,9 +49,26 @@ const CarDetails = () => {
   if (!car) return <Layout><div className="container py-20 text-center"><p className="text-muted-foreground">Car not found.</p><Button asChild variant="outline" className="mt-4"><Link to="/browse">Back to browse</Link></Button></div></Layout>;
 
   const photos = car.photos?.length ? car.photos : [];
+  const title = `${car.year} ${car.make} ${car.model} for hire in ${car.location} — AurumDrive`;
+  const description = (car.description?.slice(0, 155)) || `Rent a ${car.year} ${car.make} ${car.model} in ${car.location} for $${car.daily_price}/day on AurumDrive. ${car.transmission}, ${car.fuel_type}, ${car.seats} seats.`;
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: `${car.year} ${car.make} ${car.model}`,
+    image: photos.length ? photos : undefined,
+    description: car.description || `${car.year} ${car.make} ${car.model} available for daily hire in ${car.location}.`,
+    offers: {
+      "@type": "Offer",
+      price: car.daily_price,
+      priceCurrency: "USD",
+      availability: "https://schema.org/InStock",
+      url: `https://nairobicarhire.lovable.app/cars/${car.id}`,
+    },
+  };
 
   return (
     <Layout>
+      <Seo title={title} description={description} path={`/cars/${car.id}`} type="product" image={photos[0]} jsonLd={productJsonLd} />
       <div className="container py-8">
         <Link to="/browse" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-6 transition-smooth">
           <ArrowLeft className="w-4 h-4" /> Back to browse
@@ -68,7 +86,7 @@ const CarDetails = () => {
             {photos.length > 1 && (
               <div className="grid grid-cols-5 gap-2">
                 {photos.map((p, i) => (
-                  <button key={i} onClick={() => setActivePhoto(i)} className={`aspect-square rounded-md overflow-hidden border-2 transition-smooth ${i === activePhoto ? "border-primary" : "border-border/40 opacity-70 hover:opacity-100"}`}>
+                  <button key={i} onClick={() => setActivePhoto(i)} aria-label={`View photo ${i + 1} of ${photos.length}`} className={`aspect-square rounded-md overflow-hidden border-2 transition-smooth ${i === activePhoto ? "border-primary" : "border-border/40 opacity-70 hover:opacity-100"}`}>
                     <img src={p} alt="" className="w-full h-full object-cover" />
                   </button>
                 ))}
@@ -77,7 +95,7 @@ const CarDetails = () => {
 
             <div className="pt-6">
               <Badge variant="outline" className="border-primary/40 text-primary mb-3">{car.year}</Badge>
-              <h1 className="text-4xl md:text-5xl font-serif mb-2">{car.make} {car.model}</h1>
+              <h2 className="text-4xl md:text-5xl font-serif mb-2">{car.make} {car.model}</h2>
               <div className="flex items-center gap-2 text-muted-foreground mb-6">
                 <MapPin className="w-4 h-4" /> {car.location}
               </div>

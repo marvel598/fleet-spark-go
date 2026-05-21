@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Layout } from "@/components/layout/Layout";
+import { Seo } from "@/components/Seo";
 import { CarCard, type CarSummary } from "@/components/cars/CarCard";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Loader2 } from "lucide-react";
 
@@ -32,6 +34,11 @@ const Browse = () => {
 
   return (
     <Layout>
+      <Seo
+        title="Browse cars for hire — AurumDrive marketplace"
+        description="Search vetted cars from owners across Nairobi. Filter by transmission, price and location. Book directly with escrow-protected payments."
+        path="/browse"
+      />
       <section className="container py-12">
         <div className="mb-10 max-w-2xl">
           <span className="text-xs uppercase tracking-widest text-primary">Marketplace</span>
@@ -41,11 +48,12 @@ const Browse = () => {
 
         <div className="flex flex-wrap gap-3 mb-10 p-4 rounded-lg bg-card/50 border border-border/60">
           <div className="relative flex-1 min-w-[240px]">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search make, model or city" className="pl-9" />
+            <Label htmlFor="browse-search" className="sr-only">Search cars</Label>
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" aria-hidden="true" />
+            <Input id="browse-search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search make, model or city" className="pl-9" />
           </div>
           <Select value={transmission} onValueChange={setTransmission}>
-            <SelectTrigger className="w-[180px]"><SelectValue placeholder="Transmission" /></SelectTrigger>
+            <SelectTrigger className="w-[180px]" aria-label="Transmission"><SelectValue placeholder="Transmission" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="any">Any transmission</SelectItem>
               <SelectItem value="automatic">Automatic</SelectItem>
@@ -53,7 +61,7 @@ const Browse = () => {
             </SelectContent>
           </Select>
           <Select value={maxPrice} onValueChange={setMaxPrice}>
-            <SelectTrigger className="w-[180px]"><SelectValue placeholder="Max price" /></SelectTrigger>
+            <SelectTrigger className="w-[180px]" aria-label="Maximum price per day"><SelectValue placeholder="Max price" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="any">Any price</SelectItem>
               <SelectItem value="50">Up to $50</SelectItem>
