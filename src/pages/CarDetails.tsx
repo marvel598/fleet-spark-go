@@ -95,7 +95,7 @@ const CarDetails = () => {
 
             <div className="pt-6">
               <Badge variant="outline" className="border-primary/40 text-primary mb-3">{car.year}</Badge>
-              <h2 className="text-4xl md:text-5xl font-serif mb-2">{car.make} {car.model}</h2>
+              <h1 className="text-4xl md:text-5xl font-serif mb-2">{car.make} {car.model}</h1>
               <div className="flex items-center gap-2 text-muted-foreground mb-6">
                 <MapPin className="w-4 h-4" /> {car.location}
               </div>
