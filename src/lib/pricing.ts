@@ -1,6 +1,7 @@
-// Pricing model: daily_rate * days + 10% service fee
-// Owner receives subtotal (no service fee deducted from their side in this model).
-export const SERVICE_FEE_RATE = 0.10;
+// Pricing model: total = daily_rate * days (no add-on fee for the renter).
+// The platform keeps 30% commission; the owner receives 70%.
+export const PLATFORM_COMMISSION_RATE = 0.30;
+export const OWNER_PAYOUT_RATE = 1 - PLATFORM_COMMISSION_RATE;
 
 export function daysBetween(start: Date, end: Date): number {
   const ms = end.getTime() - start.getTime();
@@ -9,8 +10,8 @@ export function daysBetween(start: Date, end: Date): number {
 
 export function calculatePrice(dailyRate: number, days: number) {
   const subtotal = +(dailyRate * days).toFixed(2);
-  const serviceFee = +(subtotal * SERVICE_FEE_RATE).toFixed(2);
-  const total = +(subtotal + serviceFee).toFixed(2);
-  const ownerPayout = subtotal;
+  const total = subtotal;
+  const ownerPayout = +(total * OWNER_PAYOUT_RATE).toFixed(2);
+  const serviceFee = +(total - ownerPayout).toFixed(2); // platform commission (30%)
   return { subtotal, serviceFee, total, ownerPayout };
 }
