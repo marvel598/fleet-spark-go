@@ -56,6 +56,7 @@ export function Header() {
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
+              <NotificationsBell />
               <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
                 Account
               </Button>

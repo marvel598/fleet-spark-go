@@ -42,7 +42,7 @@ const Admin = () => {
 
   useEffect(() => { load(); }, [user, hasRole]);
 
-  const setCarStatus = async (id: string, status: "active" | "suspended") => {
+  const setCarStatus = async (id: string, status: "active" | "paused") => {
     const { error } = await supabase.from("cars").update({ status }).eq("id", id);
     if (error) return toast.error(error.message);
     toast.success(`Car ${status}`);
@@ -108,9 +108,9 @@ const Admin = () => {
                 <Badge variant="outline" className={c.status === "active" ? "border-primary/40 text-primary" : "border-destructive/40 text-destructive"}>{c.status}</Badge>
                 <div className="flex gap-2">
                   {c.status === "active" ? (
-                    <Button size="sm" variant="outline" onClick={() => setCarStatus(c.id, "suspended")}>Suspend</Button>
+                    <Button size="sm" variant="outline" onClick={() => setCarStatus(c.id, "paused")}>Pause</Button>
                   ) : (
-                    <Button size="sm" variant="gold" onClick={() => setCarStatus(c.id, "active")}>Reactivate</Button>
+                    <Button size="sm" variant="gold" onClick={() => setCarStatus(c.id, "active")}>Activate</Button>
                   )}
                 </div>
               </Card>
