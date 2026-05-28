@@ -86,6 +86,26 @@ const Index = () => {
         </div>
       </section>
 
+      {/* FEATURED LIVE LISTINGS */}
+      {featured.length > 0 && (
+        <section className="container py-24">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <span className="text-xs uppercase tracking-widest text-primary">Live on the marketplace</span>
+              <h2 className="text-4xl md:text-5xl font-serif mt-3">Featured cars right now.</h2>
+            </div>
+            <Button asChild variant="outlineGold" className="hidden md:inline-flex">
+              <Link to="/browse">View all <ChevronRight className="w-4 h-4" /></Link>
+            </Button>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featured.map((car) => <CarCard key={car.id} car={car} />)}
+          </div>
+        </section>
+      )}
+
+
+
       {/* THREE PATHS */}
       <section className="container py-24">
         <div className="grid md:grid-cols-3 gap-8">
