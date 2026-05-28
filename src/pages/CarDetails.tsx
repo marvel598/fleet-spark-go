@@ -35,10 +35,10 @@ const CarDetails = () => {
   useEffect(() => {
     if (!id) return;
     (async () => {
-      const { data } = await supabase.from("cars").select("*").eq("id", id).maybeSingle();
+      const { data } = await (supabase as any).from("cars_public").select("*").eq("id", id).maybeSingle();
       if (data) {
         setCar(data as FullCar);
-        const { data: profile } = await supabase.from("profiles").select("full_name").eq("id", data.owner_id).maybeSingle();
+        const { data: profile } = await (supabase as any).from("profiles_public").select("full_name").eq("id", data.owner_id).maybeSingle();
         setOwnerName(profile?.full_name || "Verified host");
       }
       setLoading(false);

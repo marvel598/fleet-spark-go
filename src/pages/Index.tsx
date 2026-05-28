@@ -1,11 +1,27 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Shield, MapPin, Sparkles, KeyRound, Car as CarIcon } from "lucide-react";
 import heroCar from "@/assets/hero-car.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { CarCard, type CarSummary } from "@/components/cars/CarCard";
 
 const Index = () => {
+  const [featured, setFeatured] = useState<CarSummary[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("cars_public")
+        .select("id,make,model,year,daily_price,location,photos,transmission,fuel_type,seats")
+        .order("created_at", { ascending: false })
+        .limit(6);
+      setFeatured((data as CarSummary[]) ?? []);
+    })();
+  }, []);
+
   return (
     <Layout>
       <Seo
@@ -69,6 +85,26 @@ const Index = () => {
           ))}
         </div>
       </section>
+
+      {/* FEATURED LIVE LISTINGS */}
+      {featured.length > 0 && (
+        <section className="container py-24">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <span className="text-xs uppercase tracking-widest text-primary">Live on the marketplace</span>
+              <h2 className="text-4xl md:text-5xl font-serif mt-3">Featured cars right now.</h2>
+            </div>
+            <Button asChild variant="outlineGold" className="hidden md:inline-flex">
+              <Link to="/browse">View all <ChevronRight className="w-4 h-4" /></Link>
+            </Button>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featured.map((car) => <CarCard key={car.id} car={car} />)}
+          </div>
+        </section>
+      )}
+
+
 
       {/* THREE PATHS */}
       <section className="container py-24">

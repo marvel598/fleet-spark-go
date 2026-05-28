@@ -18,8 +18,10 @@ const Browse = () => {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      let query = supabase.from("cars").select("id,make,model,year,daily_price,location,photos,transmission,fuel_type,seats").eq("status", "active").order("created_at", { ascending: false });
-      const { data, error } = await query;
+      const { data, error } = await (supabase as any)
+        .from("cars_public")
+        .select("id,make,model,year,daily_price,location,photos,transmission,fuel_type,seats")
+        .order("created_at", { ascending: false });
       if (!error && data) setCars(data as CarSummary[]);
       setLoading(false);
     })();

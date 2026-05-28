@@ -49,8 +49,8 @@ const Trips = () => {
     // Hydrate renter names
     const renterIds = Array.from(new Set(rows.map((r: BookingRow) => r.renter_id))) as string[];
     if (renterIds.length) {
-      const { data: profs } = await supabase.from("profiles").select("id, full_name").in("id", renterIds);
-      const map = new Map(profs?.map((p) => [p.id, p]) ?? []);
+      const { data: profs } = await (supabase as any).from("profiles_public").select("id, full_name").in("id", renterIds);
+      const map = new Map(profs?.map((p: any) => [p.id, p]) ?? []);
       rows.forEach((r: any) => { r.profiles = map.get(r.renter_id) ?? null; });
     }
     setBookings(rows);

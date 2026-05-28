@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { NotificationsBell } from "@/components/NotificationsBell";
 
 const navItems = [
   { to: "/browse", label: "Browse Cars" },
@@ -56,6 +57,7 @@ export function Header() {
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
+              <NotificationsBell />
               <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
                 Account
               </Button>
