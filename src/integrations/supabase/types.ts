@@ -125,6 +125,13 @@ export type Database = {
             referencedRelation: "cars"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "bookings_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       cars: {
@@ -255,6 +262,39 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          link: string | null
+          read_at: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          link?: string | null
+          read_at?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -331,6 +371,13 @@ export type Database = {
             referencedRelation: "cars"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "reviews_car_id_fkey"
+            columns: ["car_id"]
+            isOneToOne: false
+            referencedRelation: "cars_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       tracking_logs: {
@@ -392,7 +439,96 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      cars_public: {
+        Row: {
+          created_at: string | null
+          daily_price: number | null
+          description: string | null
+          features: string[] | null
+          fuel_type: Database["public"]["Enums"]["fuel_type"] | null
+          id: string | null
+          license_plate: string | null
+          location: string | null
+          make: string | null
+          model: string | null
+          owner_id: string | null
+          photos: string[] | null
+          seats: number | null
+          status: Database["public"]["Enums"]["car_status"] | null
+          tracking_enabled: boolean | null
+          transmission: Database["public"]["Enums"]["transmission_type"] | null
+          updated_at: string | null
+          year: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          daily_price?: number | null
+          description?: string | null
+          features?: string[] | null
+          fuel_type?: Database["public"]["Enums"]["fuel_type"] | null
+          id?: string | null
+          license_plate?: string | null
+          location?: string | null
+          make?: string | null
+          model?: string | null
+          owner_id?: string | null
+          photos?: string[] | null
+          seats?: number | null
+          status?: Database["public"]["Enums"]["car_status"] | null
+          tracking_enabled?: boolean | null
+          transmission?: Database["public"]["Enums"]["transmission_type"] | null
+          updated_at?: string | null
+          year?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          daily_price?: number | null
+          description?: string | null
+          features?: string[] | null
+          fuel_type?: Database["public"]["Enums"]["fuel_type"] | null
+          id?: string | null
+          license_plate?: string | null
+          location?: string | null
+          make?: string | null
+          model?: string | null
+          owner_id?: string | null
+          photos?: string[] | null
+          seats?: number | null
+          status?: Database["public"]["Enums"]["car_status"] | null
+          tracking_enabled?: boolean | null
+          transmission?: Database["public"]["Enums"]["transmission_type"] | null
+          updated_at?: string | null
+          year?: number | null
+        }
+        Relationships: []
+      }
+      profiles_public: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string | null
+          location: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string | null
+          location?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string | null
+          location?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_car_availability: {
