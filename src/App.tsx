@@ -15,6 +15,7 @@ import Dashboard from "./pages/Dashboard.tsx";
 import MyBookings from "./pages/MyBookings.tsx";
 import Trips from "./pages/Trips.tsx";
 import CarTracking from "./pages/CarTracking.tsx";
+import Admin from "./pages/Admin.tsx";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/my-bookings" element={<MyBookings />} />
           <Route path="/trips" element={<Trips />} />
           <Route path="/cars/:id/tracking" element={<CarTracking />} />
+          <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
