@@ -1,11 +1,27 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Shield, MapPin, Sparkles, KeyRound, Car as CarIcon } from "lucide-react";
 import heroCar from "@/assets/hero-car.jpg";
+import { supabase } from "@/integrations/supabase/client";
+import { CarCard, type CarSummary } from "@/components/cars/CarCard";
 
 const Index = () => {
+  const [featured, setFeatured] = useState<CarSummary[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await (supabase as any)
+        .from("cars_public")
+        .select("id,make,model,year,daily_price,location,photos,transmission,fuel_type,seats")
+        .order("created_at", { ascending: false })
+        .limit(6);
+      setFeatured((data as CarSummary[]) ?? []);
+    })();
+  }, []);
+
   return (
     <Layout>
       <Seo
