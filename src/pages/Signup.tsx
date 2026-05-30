@@ -58,11 +58,13 @@ const Signup = () => {
 
   const handleGoogle = async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: `${window.location.origin}/dashboard`, queryParams: { role } },
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: `${window.location.origin}/dashboard`,
+      extraParams: { role },
     });
-    if (error) { toast.error(error.message); setLoading(false); }
+    if (result.error) { toast.error(result.error.message ?? "Sign-in failed"); setLoading(false); return; }
+    if (result.redirected) return;
+    navigate("/dashboard");
   };
 
   return (
