@@ -19,6 +19,11 @@ const Admin = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [cars, setCars] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
+  const [roles, setRoles] = useState<Record<string, string[]>>({});
+  const [roleBusy, setRoleBusy] = useState<string | null>(null);
+
+  const ALL_ROLES = ["admin", "owner", "driver", "renter"] as const;
+  type AppRole = typeof ALL_ROLES[number];
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/login", { replace: true });
