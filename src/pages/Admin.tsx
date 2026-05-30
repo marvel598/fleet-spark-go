@@ -19,6 +19,11 @@ const Admin = () => {
   const [users, setUsers] = useState<any[]>([]);
   const [cars, setCars] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
+  const [roles, setRoles] = useState<Record<string, string[]>>({});
+  const [roleBusy, setRoleBusy] = useState<string | null>(null);
+
+  const ALL_ROLES = ["admin", "owner", "driver", "renter"] as const;
+  type AppRole = typeof ALL_ROLES[number];
 
   useEffect(() => {
     if (!authLoading && !user) navigate("/login", { replace: true });
@@ -27,20 +32,48 @@ const Admin = () => {
 
   const load = async () => {
     if (!user || !hasRole("admin")) return;
-    const [{ data: u }, { data: c }, { data: b }] = await Promise.all([
+    const [{ data: u }, { data: c }, { data: b }, { data: r }] = await Promise.all([
       supabase.from("profiles").select("id,full_name,phone,location,created_at").order("created_at", { ascending: false }).limit(50),
       supabase.from("cars").select("id,make,model,year,status,daily_price,location,owner_id,created_at").order("created_at", { ascending: false }).limit(50),
       supabase.from("bookings").select("id,status,total,owner_payout,service_fee,start_date,end_date,created_at,car_id,renter_id").order("created_at", { ascending: false }).limit(50),
+      supabase.from("user_roles").select("user_id,role"),
     ]);
     setUsers(u ?? []);
     setCars(c ?? []);
     setBookings(b ?? []);
+    const roleMap: Record<string, string[]> = {};
+    (r ?? []).forEach((row: any) => {
+      roleMap[row.user_id] = [...(roleMap[row.user_id] ?? []), row.role];
+    });
+    setRoles(roleMap);
     const gmv = (b ?? []).reduce((s, x: any) => s + Number(x.total || 0), 0);
     setStats({ users: u?.length ?? 0, cars: c?.length ?? 0, bookings: b?.length ?? 0, gmv });
     setLoading(false);
   };
 
   useEffect(() => { load(); }, [user, hasRole]);
+
+  const grantRole = async (userId: string, role: AppRole) => {
+    setRoleBusy(`${userId}:${role}`);
+    const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: role as any });
+    setRoleBusy(null);
+    if (error) return toast.error(error.message);
+    toast.success(`Granted ${role}`);
+    setRoles((prev) => ({ ...prev, [userId]: Array.from(new Set([...(prev[userId] ?? []), role])) }));
+  };
+
+  const revokeRole = async (userId: string, role: AppRole) => {
+    if (userId === user?.id && role === "admin") {
+      return toast.error("You can't revoke your own admin role");
+    }
+    if (!confirm(`Revoke '${role}' from this user?`)) return;
+    setRoleBusy(`${userId}:${role}`);
+    const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", role as any);
+    setRoleBusy(null);
+    if (error) return toast.error(error.message);
+    toast.success(`Revoked ${role}`);
+    setRoles((prev) => ({ ...prev, [userId]: (prev[userId] ?? []).filter((x) => x !== role) }));
+  };
 
   const setCarStatus = async (id: string, status: "active" | "paused") => {
     const { error } = await supabase.from("cars").update({ status }).eq("id", id);
@@ -80,6 +113,7 @@ const Admin = () => {
             <TabsTrigger value="bookings">Bookings</TabsTrigger>
             <TabsTrigger value="cars">Cars</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="roles">Roles</TabsTrigger>
           </TabsList>
 
           <TabsContent value="bookings" className="space-y-3 mt-4">
@@ -127,6 +161,61 @@ const Admin = () => {
                 <div className="text-xs text-muted-foreground font-mono">{u.id.slice(0, 8)}</div>
               </Card>
             ))}
+          </TabsContent>
+
+          <TabsContent value="roles" className="space-y-3 mt-4">
+            <Card className="p-4 bg-card/60 border-border/60 text-sm text-muted-foreground">
+              Grant or revoke roles per user. Changes take effect on the user's next session refresh. Available roles: admin, owner, driver, renter.
+            </Card>
+            {users.map((u) => {
+              const userRoles = roles[u.id] ?? [];
+              return (
+                <Card key={u.id} className="p-4 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <div className="font-medium">{u.full_name || "—"}</div>
+                      <div className="text-xs text-muted-foreground font-mono">{u.id}</div>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {userRoles.length === 0 && <span className="text-xs text-muted-foreground">No roles</span>}
+                      {userRoles.map((r) => (
+                        <Badge key={r} variant="outline" className="border-primary/40 text-primary capitalize">{r}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {ALL_ROLES.map((r) => {
+                      const has = userRoles.includes(r);
+                      const busy = roleBusy === `${u.id}:${r}`;
+                      const isSelfAdmin = u.id === user?.id && r === "admin";
+                      return has ? (
+                        <Button
+                          key={r}
+                          size="sm"
+                          variant="outline"
+                          disabled={busy || isSelfAdmin}
+                          onClick={() => revokeRole(u.id, r)}
+                          className="capitalize"
+                        >
+                          {busy ? <Loader2 className="w-3 h-3 animate-spin" /> : `Revoke ${r}`}
+                        </Button>
+                      ) : (
+                        <Button
+                          key={r}
+                          size="sm"
+                          variant="gold"
+                          disabled={busy}
+                          onClick={() => grantRole(u.id, r)}
+                          className="capitalize"
+                        >
+                          {busy ? <Loader2 className="w-3 h-3 animate-spin" /> : `Grant ${r}`}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </Card>
+              );
+            })}
           </TabsContent>
         </Tabs>
       </div>
