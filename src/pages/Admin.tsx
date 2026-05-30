@@ -162,6 +162,61 @@ const Admin = () => {
               </Card>
             ))}
           </TabsContent>
+
+          <TabsContent value="roles" className="space-y-3 mt-4">
+            <Card className="p-4 bg-card/60 border-border/60 text-sm text-muted-foreground">
+              Grant or revoke roles per user. Changes take effect on the user's next session refresh. Available roles: admin, owner, driver, renter.
+            </Card>
+            {users.map((u) => {
+              const userRoles = roles[u.id] ?? [];
+              return (
+                <Card key={u.id} className="p-4 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <div className="font-medium">{u.full_name || "—"}</div>
+                      <div className="text-xs text-muted-foreground font-mono">{u.id}</div>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {userRoles.length === 0 && <span className="text-xs text-muted-foreground">No roles</span>}
+                      {userRoles.map((r) => (
+                        <Badge key={r} variant="outline" className="border-primary/40 text-primary capitalize">{r}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {ALL_ROLES.map((r) => {
+                      const has = userRoles.includes(r);
+                      const busy = roleBusy === `${u.id}:${r}`;
+                      const isSelfAdmin = u.id === user?.id && r === "admin";
+                      return has ? (
+                        <Button
+                          key={r}
+                          size="sm"
+                          variant="outline"
+                          disabled={busy || isSelfAdmin}
+                          onClick={() => revokeRole(u.id, r)}
+                          className="capitalize"
+                        >
+                          {busy ? <Loader2 className="w-3 h-3 animate-spin" /> : `Revoke ${r}`}
+                        </Button>
+                      ) : (
+                        <Button
+                          key={r}
+                          size="sm"
+                          variant="gold"
+                          disabled={busy}
+                          onClick={() => grantRole(u.id, r)}
+                          className="capitalize"
+                        >
+                          {busy ? <Loader2 className="w-3 h-3 animate-spin" /> : `Grant ${r}`}
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </Card>
+              );
+            })}
+          </TabsContent>
         </Tabs>
       </div>
     </Layout>
