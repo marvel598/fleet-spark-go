@@ -32,20 +32,48 @@ const Admin = () => {
 
   const load = async () => {
     if (!user || !hasRole("admin")) return;
-    const [{ data: u }, { data: c }, { data: b }] = await Promise.all([
+    const [{ data: u }, { data: c }, { data: b }, { data: r }] = await Promise.all([
       supabase.from("profiles").select("id,full_name,phone,location,created_at").order("created_at", { ascending: false }).limit(50),
       supabase.from("cars").select("id,make,model,year,status,daily_price,location,owner_id,created_at").order("created_at", { ascending: false }).limit(50),
       supabase.from("bookings").select("id,status,total,owner_payout,service_fee,start_date,end_date,created_at,car_id,renter_id").order("created_at", { ascending: false }).limit(50),
+      supabase.from("user_roles").select("user_id,role"),
     ]);
     setUsers(u ?? []);
     setCars(c ?? []);
     setBookings(b ?? []);
+    const roleMap: Record<string, string[]> = {};
+    (r ?? []).forEach((row: any) => {
+      roleMap[row.user_id] = [...(roleMap[row.user_id] ?? []), row.role];
+    });
+    setRoles(roleMap);
     const gmv = (b ?? []).reduce((s, x: any) => s + Number(x.total || 0), 0);
     setStats({ users: u?.length ?? 0, cars: c?.length ?? 0, bookings: b?.length ?? 0, gmv });
     setLoading(false);
   };
 
   useEffect(() => { load(); }, [user, hasRole]);
+
+  const grantRole = async (userId: string, role: AppRole) => {
+    setRoleBusy(`${userId}:${role}`);
+    const { error } = await supabase.from("user_roles").insert({ user_id: userId, role: role as any });
+    setRoleBusy(null);
+    if (error) return toast.error(error.message);
+    toast.success(`Granted ${role}`);
+    setRoles((prev) => ({ ...prev, [userId]: Array.from(new Set([...(prev[userId] ?? []), role])) }));
+  };
+
+  const revokeRole = async (userId: string, role: AppRole) => {
+    if (userId === user?.id && role === "admin") {
+      return toast.error("You can't revoke your own admin role");
+    }
+    if (!confirm(`Revoke '${role}' from this user?`)) return;
+    setRoleBusy(`${userId}:${role}`);
+    const { error } = await supabase.from("user_roles").delete().eq("user_id", userId).eq("role", role as any);
+    setRoleBusy(null);
+    if (error) return toast.error(error.message);
+    toast.success(`Revoked ${role}`);
+    setRoles((prev) => ({ ...prev, [userId]: (prev[userId] ?? []).filter((x) => x !== role) }));
+  };
 
   const setCarStatus = async (id: string, status: "active" | "paused") => {
     const { error } = await supabase.from("cars").update({ status }).eq("id", id);
