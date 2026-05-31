@@ -1,117 +1,113 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Figtree:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ============================================================
-   PREMIUM DARK + GOLD DESIGN SYSTEM
-   All colors are HSL. Use semantic tokens only — never hardcode.
+   MIDNIGHT INDIGO — MODERN DARK DESIGN SYSTEM
+   All colors HSL. Semantic tokens only — never hardcode.
    ============================================================ */
 
 @layer base {
   :root {
-    /* Surfaces — deep charcoal, almost black */
-    --background: 30 10% 6%;
-    --foreground: 40 25% 92%;
+    /* Surfaces — deep midnight blue-black */
+    --background: 240 60% 6%;
+    --foreground: 230 30% 96%;
 
-    --card: 30 10% 9%;
-    --card-foreground: 40 25% 92%;
+    --card: 236 45% 10%;
+    --card-foreground: 230 30% 96%;
 
-    --popover: 30 10% 8%;
-    --popover-foreground: 40 25% 92%;
+    --popover: 236 45% 9%;
+    --popover-foreground: 230 30% 96%;
 
-    /* Brand — warm antique gold */
-    --primary: 41 65% 56%;
-    --primary-foreground: 30 15% 8%;
-    --primary-glow: 45 80% 65%;
-    --primary-deep: 36 60% 38%;
+    /* Brand — electric indigo */
+    --primary: 243 75% 59%;
+    --primary-foreground: 230 40% 98%;
+    --primary-glow: 250 90% 72%;
+    --primary-deep: 240 60% 35%;
 
-    --secondary: 30 8% 14%;
-    --secondary-foreground: 40 25% 90%;
+    --secondary: 236 35% 14%;
+    --secondary-foreground: 230 25% 92%;
 
-    --muted: 30 6% 13%;
-    --muted-foreground: 40 8% 60%;
+    --muted: 236 30% 13%;
+    --muted-foreground: 230 12% 65%;
 
-    --accent: 41 50% 50%;
-    --accent-foreground: 30 15% 8%;
+    --accent: 250 85% 68%;
+    --accent-foreground: 230 40% 98%;
 
-    --destructive: 0 70% 50%;
+    --destructive: 0 75% 58%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 35 12% 16%;
-    --input: 35 12% 14%;
-    --ring: 41 65% 56%;
+    --border: 236 30% 18%;
+    --input: 236 30% 15%;
+    --ring: 243 75% 59%;
 
-    --radius: 0.625rem;
+    --radius: 0.875rem;
 
-    /* Gradients */
-    --gradient-gold: linear-gradient(135deg, hsl(45 80% 65%), hsl(41 65% 56%) 50%, hsl(36 60% 38%));
-    --gradient-gold-soft: linear-gradient(135deg, hsl(41 65% 56% / 0.18), hsl(36 60% 38% / 0.05));
-    --gradient-dark: linear-gradient(180deg, hsl(30 10% 4%) 0%, hsl(30 10% 8%) 100%);
-    --gradient-hero-fade: linear-gradient(180deg, hsl(30 10% 6% / 0.2) 0%, hsl(30 10% 6% / 0.7) 60%, hsl(30 10% 6%) 100%);
-    --gradient-radial-gold: radial-gradient(ellipse at top, hsl(41 65% 56% / 0.18), transparent 60%);
+    /* Gradients — kept under legacy "gold" names so existing utilities keep working */
+    --gradient-gold: linear-gradient(135deg, hsl(250 90% 72%), hsl(243 75% 59%) 50%, hsl(236 70% 42%));
+    --gradient-gold-soft: linear-gradient(135deg, hsl(243 75% 59% / 0.22), hsl(250 90% 72% / 0.06));
+    --gradient-dark: linear-gradient(180deg, hsl(240 60% 5%) 0%, hsl(236 45% 10%) 100%);
+    --gradient-hero-fade: linear-gradient(180deg, hsl(240 60% 6% / 0.25) 0%, hsl(240 60% 6% / 0.75) 60%, hsl(240 60% 6%) 100%);
+    --gradient-radial-gold: radial-gradient(ellipse at top, hsl(243 75% 59% / 0.28), transparent 65%);
 
     /* Shadows */
-    --shadow-gold: 0 10px 40px -10px hsl(41 65% 56% / 0.4);
-    --shadow-gold-sm: 0 4px 20px -4px hsl(41 65% 56% / 0.3);
-    --shadow-elevated: 0 20px 50px -15px hsl(0 0% 0% / 0.6);
-    --shadow-card: 0 4px 24px -8px hsl(0 0% 0% / 0.5);
+    --shadow-gold: 0 10px 50px -10px hsl(243 75% 59% / 0.55);
+    --shadow-gold-sm: 0 4px 24px -4px hsl(243 75% 59% / 0.4);
+    --shadow-elevated: 0 24px 60px -20px hsl(240 60% 2% / 0.7);
+    --shadow-card: 0 4px 28px -10px hsl(240 60% 2% / 0.55);
 
-    /* Transitions */
     --transition-smooth: 300ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-elegant: 500ms cubic-bezier(0.16, 1, 0.3, 1);
 
-    --sidebar-background: 30 10% 7%;
-    --sidebar-foreground: 40 25% 88%;
-    --sidebar-primary: 41 65% 56%;
-    --sidebar-primary-foreground: 30 15% 8%;
-    --sidebar-accent: 30 8% 12%;
-    --sidebar-accent-foreground: 41 65% 56%;
-    --sidebar-border: 35 12% 14%;
-    --sidebar-ring: 41 65% 56%;
+    --sidebar-background: 240 55% 7%;
+    --sidebar-foreground: 230 25% 90%;
+    --sidebar-primary: 243 75% 59%;
+    --sidebar-primary-foreground: 230 40% 98%;
+    --sidebar-accent: 236 35% 13%;
+    --sidebar-accent-foreground: 250 90% 72%;
+    --sidebar-border: 236 30% 16%;
+    --sidebar-ring: 243 75% 59%;
   }
 
-  /* Dark is the default; .dark mirrors :root for shadcn compatibility */
   .dark {
-    --background: 30 10% 6%;
-    --foreground: 40 25% 92%;
-    --card: 30 10% 9%;
-    --card-foreground: 40 25% 92%;
-    --popover: 30 10% 8%;
-    --popover-foreground: 40 25% 92%;
-    --primary: 41 65% 56%;
-    --primary-foreground: 30 15% 8%;
-    --secondary: 30 8% 14%;
-    --secondary-foreground: 40 25% 90%;
-    --muted: 30 6% 13%;
-    --muted-foreground: 40 8% 60%;
-    --accent: 41 50% 50%;
-    --accent-foreground: 30 15% 8%;
-    --destructive: 0 70% 50%;
+    --background: 240 60% 6%;
+    --foreground: 230 30% 96%;
+    --card: 236 45% 10%;
+    --card-foreground: 230 30% 96%;
+    --popover: 236 45% 9%;
+    --popover-foreground: 230 30% 96%;
+    --primary: 243 75% 59%;
+    --primary-foreground: 230 40% 98%;
+    --secondary: 236 35% 14%;
+    --secondary-foreground: 230 25% 92%;
+    --muted: 236 30% 13%;
+    --muted-foreground: 230 12% 65%;
+    --accent: 250 85% 68%;
+    --accent-foreground: 230 40% 98%;
+    --destructive: 0 75% 58%;
     --destructive-foreground: 0 0% 98%;
-    --border: 35 12% 16%;
-    --input: 35 12% 14%;
-    --ring: 41 65% 56%;
+    --border: 236 30% 18%;
+    --input: 236 30% 15%;
+    --ring: 243 75% 59%;
   }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  html {
-    @apply dark;
-  }
+  * { @apply border-border; }
+  html { @apply dark; }
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "ss01", "cv11";
   }
   h1, h2, h3, h4 {
     @apply font-serif tracking-tight;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
   ::selection {
-    background: hsl(var(--primary) / 0.3);
+    background: hsl(var(--primary) / 0.35);
     color: hsl(var(--foreground));
   }
 }
