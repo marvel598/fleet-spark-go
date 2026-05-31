@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Active renter views full car" ON public.cars;
