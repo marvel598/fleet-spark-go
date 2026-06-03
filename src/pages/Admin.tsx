@@ -21,6 +21,7 @@ const Admin = () => {
   const [bookings, setBookings] = useState<any[]>([]);
   const [roles, setRoles] = useState<Record<string, string[]>>({});
   const [roleBusy, setRoleBusy] = useState<string | null>(null);
+  const [auditLog, setAuditLog] = useState<any[]>([]);
 
   const ALL_ROLES = ["admin", "owner", "driver", "renter"] as const;
   type AppRole = typeof ALL_ROLES[number];
