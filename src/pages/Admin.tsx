@@ -63,6 +63,12 @@ const Admin = () => {
     if (error) return toast.error(error.message);
     toast.success(`Granted ${role}`);
     setRoles((prev) => ({ ...prev, [userId]: Array.from(new Set([...(prev[userId] ?? []), role])) }));
+    refreshAudit();
+  };
+
+  const refreshAudit = async () => {
+    const { data } = await supabase.from("role_audit_log").select("id,action,target_user_id,role,actor_id,created_at").order("created_at", { ascending: false }).limit(100);
+    setAuditLog(data ?? []);
   };
 
   const revokeRole = async (userId: string, role: AppRole) => {
