@@ -117,6 +117,7 @@ const Admin = () => {
             <TabsTrigger value="cars">Cars</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="roles">Roles</TabsTrigger>
+            <TabsTrigger value="audit">Audit log</TabsTrigger>
           </TabsList>
 
           <TabsContent value="bookings" className="space-y-3 mt-4">
