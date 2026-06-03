@@ -33,12 +33,14 @@ const Admin = () => {
 
   const load = async () => {
     if (!user || !hasRole("admin")) return;
-    const [{ data: u }, { data: c }, { data: b }, { data: r }] = await Promise.all([
+    const [{ data: u }, { data: c }, { data: b }, { data: r }, { data: al }] = await Promise.all([
       supabase.from("profiles").select("id,full_name,phone,location,created_at").order("created_at", { ascending: false }).limit(50),
       supabase.from("cars").select("id,make,model,year,status,daily_price,location,owner_id,created_at").order("created_at", { ascending: false }).limit(50),
       supabase.from("bookings").select("id,status,total,owner_payout,service_fee,start_date,end_date,created_at,car_id,renter_id").order("created_at", { ascending: false }).limit(50),
       supabase.from("user_roles").select("user_id,role"),
+      supabase.from("role_audit_log").select("id,action,target_user_id,role,actor_id,created_at").order("created_at", { ascending: false }).limit(100),
     ]);
+    setAuditLog(al ?? []);
     setUsers(u ?? []);
     setCars(c ?? []);
     setBookings(b ?? []);
