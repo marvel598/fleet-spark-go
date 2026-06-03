@@ -21,6 +21,7 @@ const Admin = () => {
   const [bookings, setBookings] = useState<any[]>([]);
   const [roles, setRoles] = useState<Record<string, string[]>>({});
   const [roleBusy, setRoleBusy] = useState<string | null>(null);
+  const [auditLog, setAuditLog] = useState<any[]>([]);
 
   const ALL_ROLES = ["admin", "owner", "driver", "renter"] as const;
   type AppRole = typeof ALL_ROLES[number];
@@ -32,12 +33,14 @@ const Admin = () => {
 
   const load = async () => {
     if (!user || !hasRole("admin")) return;
-    const [{ data: u }, { data: c }, { data: b }, { data: r }] = await Promise.all([
+    const [{ data: u }, { data: c }, { data: b }, { data: r }, { data: al }] = await Promise.all([
       supabase.from("profiles").select("id,full_name,phone,location,created_at").order("created_at", { ascending: false }).limit(50),
       supabase.from("cars").select("id,make,model,year,status,daily_price,location,owner_id,created_at").order("created_at", { ascending: false }).limit(50),
       supabase.from("bookings").select("id,status,total,owner_payout,service_fee,start_date,end_date,created_at,car_id,renter_id").order("created_at", { ascending: false }).limit(50),
       supabase.from("user_roles").select("user_id,role"),
+      supabase.from("role_audit_log").select("id,action,target_user_id,role,actor_id,created_at").order("created_at", { ascending: false }).limit(100),
     ]);
+    setAuditLog(al ?? []);
     setUsers(u ?? []);
     setCars(c ?? []);
     setBookings(b ?? []);
@@ -60,6 +63,12 @@ const Admin = () => {
     if (error) return toast.error(error.message);
     toast.success(`Granted ${role}`);
     setRoles((prev) => ({ ...prev, [userId]: Array.from(new Set([...(prev[userId] ?? []), role])) }));
+    refreshAudit();
+  };
+
+  const refreshAudit = async () => {
+    const { data } = await supabase.from("role_audit_log").select("id,action,target_user_id,role,actor_id,created_at").order("created_at", { ascending: false }).limit(100);
+    setAuditLog(data ?? []);
   };
 
   const revokeRole = async (userId: string, role: AppRole) => {
@@ -73,6 +82,7 @@ const Admin = () => {
     if (error) return toast.error(error.message);
     toast.success(`Revoked ${role}`);
     setRoles((prev) => ({ ...prev, [userId]: (prev[userId] ?? []).filter((x) => x !== role) }));
+    refreshAudit();
   };
 
   const setCarStatus = async (id: string, status: "active" | "paused") => {
@@ -114,6 +124,7 @@ const Admin = () => {
             <TabsTrigger value="cars">Cars</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="roles">Roles</TabsTrigger>
+            <TabsTrigger value="audit">Audit log</TabsTrigger>
           </TabsList>
 
           <TabsContent value="bookings" className="space-y-3 mt-4">
@@ -213,6 +224,41 @@ const Admin = () => {
                       );
                     })}
                   </div>
+                </Card>
+              );
+            })}
+          </TabsContent>
+
+          <TabsContent value="audit" className="space-y-3 mt-4">
+            <Card className="p-4 bg-card/60 border-border/60 text-sm text-muted-foreground">
+              Immutable record of every role grant and revoke. Showing the latest 100 events.
+            </Card>
+            {auditLog.length === 0 && (
+              <Card className="p-4 text-sm text-muted-foreground">No role changes recorded yet.</Card>
+            )}
+            {auditLog.map((e) => {
+              const actorName = users.find((u) => u.id === e.actor_id)?.full_name;
+              const targetName = users.find((u) => u.id === e.target_user_id)?.full_name;
+              return (
+                <Card key={e.id} className="p-4 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <Badge
+                      variant="outline"
+                      className={e.action === "grant" ? "border-primary/40 text-primary" : "border-destructive/40 text-destructive"}
+                    >
+                      {e.action}
+                    </Badge>
+                    <span className="capitalize font-medium">{e.role}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Target </span>
+                    <span>{targetName || <span className="font-mono text-xs">{e.target_user_id.slice(0, 8)}</span>}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">By </span>
+                    <span>{actorName || (e.actor_id ? <span className="font-mono text-xs">{e.actor_id.slice(0, 8)}</span> : "system")}</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">{new Date(e.created_at).toLocaleString()}</div>
                 </Card>
               );
             })}
