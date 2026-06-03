@@ -221,6 +221,41 @@ const Admin = () => {
               );
             })}
           </TabsContent>
+
+          <TabsContent value="audit" className="space-y-3 mt-4">
+            <Card className="p-4 bg-card/60 border-border/60 text-sm text-muted-foreground">
+              Immutable record of every role grant and revoke. Showing the latest 100 events.
+            </Card>
+            {auditLog.length === 0 && (
+              <Card className="p-4 text-sm text-muted-foreground">No role changes recorded yet.</Card>
+            )}
+            {auditLog.map((e) => {
+              const actorName = users.find((u) => u.id === e.actor_id)?.full_name;
+              const targetName = users.find((u) => u.id === e.target_user_id)?.full_name;
+              return (
+                <Card key={e.id} className="p-4 flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <Badge
+                      variant="outline"
+                      className={e.action === "grant" ? "border-primary/40 text-primary" : "border-destructive/40 text-destructive"}
+                    >
+                      {e.action}
+                    </Badge>
+                    <span className="capitalize font-medium">{e.role}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Target </span>
+                    <span>{targetName || <span className="font-mono text-xs">{e.target_user_id.slice(0, 8)}</span>}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">By </span>
+                    <span>{actorName || (e.actor_id ? <span className="font-mono text-xs">{e.actor_id.slice(0, 8)}</span> : "system")}</span>
+                  </div>
+                  <div className="text-xs text-muted-foreground">{new Date(e.created_at).toLocaleString()}</div>
+                </Card>
+              );
+            })}
+          </TabsContent>
         </Tabs>
       </div>
     </Layout>
