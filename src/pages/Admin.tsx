@@ -82,6 +82,7 @@ const Admin = () => {
     if (error) return toast.error(error.message);
     toast.success(`Revoked ${role}`);
     setRoles((prev) => ({ ...prev, [userId]: (prev[userId] ?? []).filter((x) => x !== role) }));
+    refreshAudit();
   };
 
   const setCarStatus = async (id: string, status: "active" | "paused") => {
