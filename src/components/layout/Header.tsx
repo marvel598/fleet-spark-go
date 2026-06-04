@@ -7,12 +7,12 @@ import { cn } from "@/lib/utils";
 import { NotificationsBell } from "@/components/NotificationsBell";
 
 const navItems = [
-  { to: "/browse", label: "Browse Cars" },
-  { to: "/my-bookings", label: "My Bookings", requireAuth: true },
-  { to: "/list-car", label: "List Your Car", requireRole: "owner" as const },
-  { to: "/my-cars", label: "My Cars", requireRole: "owner" as const },
-  { to: "/trips", label: "Trips", requireRole: "owner" as const },
-  { to: "/dashboard", label: "Dashboard", requireAuth: true },
+  { to: "/inventory", label: "Inventory" },
+  { to: "/compare", label: "Compare" },
+  { to: "/reviews", label: "Reviews" },
+  { to: "/finance/calculator", label: "Finance" },
+  { to: "/dealer", label: "Dealer Hub", requireRole: "dealer" as const },
+  { to: "/account", label: "My Account", requireAuth: true },
 ];
 
 export function Header() {
@@ -35,11 +35,11 @@ export function Header() {
             <Car className="w-5 h-5 text-primary-foreground" strokeWidth={2.5} />
           </div>
           <span className="font-serif text-2xl font-semibold tracking-tight">
-            Aurum<span className="text-primary">Drive</span>
+            Aurum<span className="text-primary">Motors</span>
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-8">
+        <nav className="hidden md:flex items-center gap-7">
           {visibleItems.map((item) => (
             <Link
               key={item.to}
@@ -58,9 +58,9 @@ export function Header() {
           {user ? (
             <>
               <NotificationsBell />
-              <Button variant="ghost" size="sm" onClick={() => navigate("/dashboard")}>
-                Account
-              </Button>
+              {hasRole("admin") && (
+                <Button variant="ghost" size="sm" onClick={() => navigate("/admin")}>Admin</Button>
+              )}
               <Button variant="outlineGold" size="sm" onClick={async () => { await signOut(); navigate("/"); }}>
                 Sign out
               </Button>

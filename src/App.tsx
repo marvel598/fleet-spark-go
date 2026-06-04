@@ -7,14 +7,14 @@ import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Login from "./pages/Login.tsx";
 import Signup from "./pages/Signup.tsx";
-import Browse from "./pages/Browse.tsx";
-import CarDetails from "./pages/CarDetails.tsx";
-import ListCar from "./pages/ListCar.tsx";
-import MyCars from "./pages/MyCars.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
-import MyBookings from "./pages/MyBookings.tsx";
-import Trips from "./pages/Trips.tsx";
-import CarTracking from "./pages/CarTracking.tsx";
+import Inventory from "./pages/Inventory.tsx";
+import VehicleDetail from "./pages/VehicleDetail.tsx";
+import Compare from "./pages/Compare.tsx";
+import Reviews from "./pages/Reviews.tsx";
+import FinanceCalculator from "./pages/FinanceCalculator.tsx";
+import Account from "./pages/Account.tsx";
+import DealerHub from "./pages/DealerHub.tsx";
+import DealerVehicleEdit from "./pages/DealerVehicleEdit.tsx";
 import Admin from "./pages/Admin.tsx";
 
 const queryClient = new QueryClient();
@@ -29,14 +29,14 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/browse" element={<Browse />} />
-          <Route path="/cars/:id" element={<CarDetails />} />
-          <Route path="/list-car" element={<ListCar />} />
-          <Route path="/my-cars" element={<MyCars />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/my-bookings" element={<MyBookings />} />
-          <Route path="/trips" element={<Trips />} />
-          <Route path="/cars/:id/tracking" element={<CarTracking />} />
+          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/vehicle/:id" element={<VehicleDetail />} />
+          <Route path="/compare" element={<Compare />} />
+          <Route path="/reviews" element={<Reviews />} />
+          <Route path="/finance/calculator" element={<FinanceCalculator />} />
+          <Route path="/account" element={<Account />} />
+          <Route path="/dealer" element={<DealerHub />} />
+          <Route path="/dealer/vehicles/:id" element={<DealerVehicleEdit />} />
           <Route path="/admin" element={<Admin />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

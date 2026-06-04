@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
-export type AppRole = "renter" | "owner" | "driver" | "admin";
+export type AppRole = "customer" | "dealer" | "admin";
 
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
@@ -11,19 +11,16 @@ export function useAuth() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, sess) => {
       setSession(sess);
       setUser(sess?.user ?? null);
       if (sess?.user) {
-        // Defer Supabase call to avoid deadlock
         setTimeout(() => fetchRoles(sess.user.id), 0);
       } else {
         setRoles([]);
       }
     });
 
-    // Then check existing session
     supabase.auth.getSession().then(({ data: { session: sess } }) => {
       setSession(sess);
       setUser(sess?.user ?? null);
