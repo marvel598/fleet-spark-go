@@ -1,38 +1,65 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Seo } from "@/components/Seo";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Shield, MapPin, Sparkles, KeyRound, Car as CarIcon } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Card } from "@/components/ui/card";
+import { ChevronRight, Search, Shield, BadgeCheck, Sparkles, Calculator } from "lucide-react";
 import heroCar from "@/assets/hero-car.jpg";
 import { supabase } from "@/integrations/supabase/client";
-import { CarCard, type CarSummary } from "@/components/cars/CarCard";
+import { VehicleCard, type VehicleSummary } from "@/components/vehicles/VehicleCard";
+
+const bodyTypes = [
+  { value: "sedan", label: "Sedan" },
+  { value: "suv", label: "SUV" },
+  { value: "hatchback", label: "Hatchback" },
+  { value: "pickup", label: "Pickup" },
+  { value: "coupe", label: "Coupe" },
+  { value: "convertible", label: "Convertible" },
+];
 
 const Index = () => {
-  const [featured, setFeatured] = useState<CarSummary[]>([]);
+  const navigate = useNavigate();
+  const [featured, setFeatured] = useState<VehicleSummary[]>([]);
+  const [search, setSearch] = useState("");
+  const [bodyType, setBodyType] = useState<string>("any");
+  const [maxPrice, setMaxPrice] = useState("");
 
   useEffect(() => {
     (async () => {
-      const { data } = await (supabase as any)
-        .from("cars_public")
-        .select("id,make,model,year,daily_price,location,photos,transmission,fuel_type,seats")
+      const { data } = await supabase
+        .from("vehicles")
+        .select("id,make,model,year,trim,price,mileage,photos,fuel_type,transmission,body_type,condition,location,status")
+        .eq("status", "available")
         .order("created_at", { ascending: false })
         .limit(6);
-      setFeatured((data as CarSummary[]) ?? []);
+      setFeatured((data as VehicleSummary[]) ?? []);
     })();
   }, []);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (search) params.set("q", search);
+    if (bodyType && bodyType !== "any") params.set("body", bodyType);
+    if (maxPrice) params.set("maxPrice", maxPrice);
+    navigate(`/inventory?${params.toString()}`);
+  };
 
   return (
     <Layout>
       <Seo
-        title="AurumDrive — Premium peer-to-peer car hire in Nairobi"
-        description="Rent vetted cars from trusted owners, hire drivers and book fleets. Escrow-protected payments and live trip tracking on AurumDrive."
+        title="AurumMotors — Find your next car in Kenya"
+        description="Shop new, used and certified vehicles from trusted dealers. Compare models, read expert reviews and calculate financing in seconds."
         path="/"
       />
-      {/* HERO */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden">
+
+      {/* HERO + SEARCH */}
+      <section className="relative min-h-[88vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroCar} alt="Premium luxury car at night" width={1920} height={1080} fetchPriority="high" className="w-full h-full object-cover opacity-60" />
+          <img src={heroCar} alt="Premium vehicle on the showroom floor" width={1920} height={1080} fetchPriority="high" className="w-full h-full object-cover opacity-60" />
           <div className="absolute inset-0 bg-gradient-hero-fade" />
           <div className="absolute inset-0 bg-gradient-radial-gold" />
         </div>
@@ -41,102 +68,108 @@ const Index = () => {
           <div className="max-w-3xl animate-fade-in-up">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary/30 bg-background/40 backdrop-blur mb-8">
               <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-xs uppercase tracking-widest text-primary">A premium car marketplace</span>
+              <span className="text-xs uppercase tracking-widest text-primary">Vehicles you'll love</span>
             </div>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif leading-[1.05] mb-6">
-              Drive the <span className="text-gradient-gold italic">extraordinary</span>.
+              Find your next <span className="text-gradient-gold italic">drive</span>.
             </h1>
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mb-10 leading-relaxed">
-              From everyday wheels to weekend dream machines — rent direct from owners, hire trusted drivers, and book entire fleets.
+              Thousands of new, used and certified vehicles from trusted dealers — search, compare and finance, all in one place.
             </p>
-            <div className="flex flex-wrap gap-4">
-              <Button asChild variant="hero" size="xl">
-                <Link to="/browse">Browse cars <ChevronRight className="w-5 h-5" /></Link>
+
+            <form onSubmit={submit} className="bg-card/70 backdrop-blur-xl border border-border/60 rounded-xl p-3 shadow-elevated grid grid-cols-1 md:grid-cols-[1fr,180px,160px,auto] gap-2">
+              <Input
+                placeholder="Search make, model, e.g. Toyota Prado"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="border-0 bg-transparent focus-visible:ring-0 text-base h-12"
+              />
+              <Select value={bodyType} onValueChange={setBodyType}>
+                <SelectTrigger className="h-12 border-0 bg-secondary/40"><SelectValue placeholder="Any body type" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any">Any body type</SelectItem>
+                  {bodyTypes.map((b) => <SelectItem key={b.value} value={b.value}>{b.label}</SelectItem>)}
+                </SelectContent>
+              </Select>
+              <Input
+                placeholder="Max price"
+                inputMode="numeric"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value.replace(/[^\d]/g, ""))}
+                className="h-12 border-0 bg-secondary/40"
+              />
+              <Button type="submit" variant="hero" size="lg" className="h-12">
+                <Search className="w-4 h-4" /> Search
               </Button>
-              <Button asChild variant="outlineGold" size="xl">
-                <Link to="/signup">List your car</Link>
-              </Button>
-            </div>
+            </form>
           </div>
         </div>
       </section>
 
-      {/* VALUE PROPS */}
-      <section className="container py-24">
-        <div className="text-center mb-16 max-w-2xl mx-auto">
-          <span className="text-xs uppercase tracking-widest text-primary">Why AurumDrive</span>
-          <h2 className="text-4xl md:text-5xl font-serif mt-3 mb-4">A new standard for car hire.</h2>
-          <p className="text-muted-foreground">Curated vehicles, verified owners and drivers, transparent pricing and protection on every trip.</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            { Icon: CarIcon, title: "Curated fleet", desc: "From compact city cars to grand tourers — every listing meets our quality bar." },
-            { Icon: Shield, title: "Protected bookings", desc: "Escrow-secured payments and verified identity on both sides of every trip." },
-            { Icon: MapPin, title: "Live trip tracking", desc: "See your vehicle in real time and stay in touch with the owner or driver." },
-          ].map(({ Icon, title, desc }) => (
-            <div key={title} className="p-8 rounded-lg bg-card/50 border border-border/60 hover:border-primary/40 transition-smooth">
-              <div className="w-12 h-12 rounded-lg bg-gradient-gold-soft border border-primary/30 flex items-center justify-center mb-5">
-                <Icon className="w-5 h-5 text-primary" />
-              </div>
-              <h3 className="font-serif text-2xl mb-2">{title}</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FEATURED LIVE LISTINGS */}
-      {featured.length > 0 && (
-        <section className="container py-24">
-          <div className="flex items-end justify-between mb-10">
-            <div>
-              <span className="text-xs uppercase tracking-widest text-primary">Live on the marketplace</span>
-              <h2 className="text-4xl md:text-5xl font-serif mt-3">Featured cars right now.</h2>
-            </div>
-            <Button asChild variant="outlineGold" className="hidden md:inline-flex">
-              <Link to="/browse">View all <ChevronRight className="w-4 h-4" /></Link>
-            </Button>
+      {/* BROWSE BY BODY TYPE */}
+      <section className="container py-20">
+        <div className="flex items-end justify-between mb-10">
+          <div>
+            <span className="text-xs uppercase tracking-widest text-primary">Shop by type</span>
+            <h2 className="text-4xl font-serif mt-2">Find your fit</h2>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featured.map((car) => <CarCard key={car.id} car={car} />)}
-          </div>
-        </section>
-      )}
-
-
-
-      {/* THREE PATHS */}
-      <section className="container py-24">
-        <div className="grid md:grid-cols-3 gap-8">
-          {[
-            { Icon: CarIcon, title: "Renters", body: "Find the perfect car for every occasion. Search by location, type and price.", cta: "Browse cars", to: "/browse" },
-            { Icon: KeyRound, title: "Owners", body: "Turn your car into income. Set your price, manage availability, get paid securely.", cta: "List your car", to: "/signup" },
-            { Icon: Sparkles, title: "Drivers", body: "Get hired for trips and chauffeur work with verified clients across the city.", cta: "Become a driver", to: "/signup" },
-          ].map(({ Icon, title, body, cta, to }) => (
-            <Link key={title} to={to} className="group p-10 rounded-lg border border-border/60 bg-gradient-dark hover:border-primary/50 transition-elegant hover:shadow-gold-sm">
-              <Icon className="w-8 h-8 text-primary mb-6" />
-              <h3 className="font-serif text-3xl mb-3">{title}</h3>
-              <p className="text-muted-foreground mb-6 leading-relaxed">{body}</p>
-              <span className="text-primary text-sm tracking-wide flex items-center gap-1 group-hover:gap-3 transition-smooth">
-                {cta} <ChevronRight className="w-4 h-4" />
-              </span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          {bodyTypes.map((b) => (
+            <Link
+              key={b.value}
+              to={`/inventory?body=${b.value}`}
+              className="p-6 rounded-lg bg-card/50 border border-border/60 hover:border-primary/50 transition-smooth text-center"
+            >
+              <div className="font-serif text-lg">{b.label}</div>
             </Link>
           ))}
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="container py-24">
-        <div className="rounded-2xl bg-gradient-gold-soft border border-primary/30 p-12 md:p-20 text-center relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-radial-gold opacity-50" />
-          <div className="relative">
-            <h2 className="text-4xl md:text-6xl font-serif mb-4">Ready when you are.</h2>
-            <p className="text-muted-foreground mb-8 max-w-xl mx-auto">Create your free account in under a minute. No commitment, no fees until you book.</p>
-            <Button asChild variant="hero" size="xl">
-              <Link to="/signup">Get started</Link>
-            </Button>
+      {/* FEATURED VEHICLES */}
+      <section className="container py-20 border-t border-border/40">
+        <div className="flex items-end justify-between mb-10">
+          <div>
+            <span className="text-xs uppercase tracking-widest text-primary">Featured</span>
+            <h2 className="text-4xl font-serif mt-2">Fresh on the lot</h2>
           </div>
+          <Button asChild variant="outlineGold">
+            <Link to="/inventory">View all <ChevronRight className="w-4 h-4" /></Link>
+          </Button>
+        </div>
+        {featured.length === 0 ? (
+          <Card className="p-12 text-center bg-card/40 border-border/60">
+            <p className="text-muted-foreground">No vehicles listed yet. Dealers can add inventory from the Dealer Hub.</p>
+          </Card>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featured.map((v) => <VehicleCard key={v.id} vehicle={v} />)}
+          </div>
+        )}
+      </section>
+
+      {/* WHY US */}
+      <section className="container py-20 border-t border-border/40">
+        <div className="text-center mb-14 max-w-2xl mx-auto">
+          <span className="text-xs uppercase tracking-widest text-primary">Why AurumMotors</span>
+          <h2 className="text-4xl md:text-5xl font-serif mt-3 mb-4">Buying a car, made simple.</h2>
+          <p className="text-muted-foreground">Verified dealers, transparent pricing, financing on every listing, and expert reviews to help you decide.</p>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          {[
+            { Icon: BadgeCheck, title: "Verified dealers", desc: "Every vehicle comes from a vetted partner with full disclosure." },
+            { Icon: Shield, title: "Confidence in every deal", desc: "VIN-tracked listings, condition grades and dealer warranties where applicable." },
+            { Icon: Calculator, title: "Finance instantly", desc: "Estimate monthly payments and apply for financing in under a minute." },
+          ].map(({ Icon, title, desc }) => (
+            <div key={title} className="p-8 rounded-lg bg-card/50 border border-border/60 hover:border-primary/40 transition-smooth">
+              <div className="w-12 h-12 rounded-lg bg-gradient-gold-soft border border-primary/30 flex items-center justify-center mb-5">
+                <Icon className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="font-serif text-xl mb-2">{title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
+            </div>
+          ))}
         </div>
       </section>
     </Layout>

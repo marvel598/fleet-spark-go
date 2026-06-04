@@ -37,7 +37,7 @@ const Login = () => {
   const [otpSent, setOtpSent] = useState(false);
 
   useEffect(() => {
-    if (user) navigate("/dashboard", { replace: true });
+    if (user) navigate("/account", { replace: true });
   }, [user, navigate]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
@@ -49,17 +49,17 @@ const Login = () => {
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Welcome back");
-    navigate("/dashboard");
+    navigate("/account");
   };
 
   const handleGoogle = async () => {
     setLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/dashboard`,
+      redirect_uri: `${window.location.origin}/account`,
     });
     if (result.error) { toast.error(result.error.message ?? "Sign-in failed"); setLoading(false); return; }
     if (result.redirected) return;
-    navigate("/dashboard");
+    navigate("/account");
   };
 
   const sendOtp = async () => {
@@ -81,7 +81,7 @@ const Login = () => {
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Welcome");
-    navigate("/dashboard");
+    navigate("/account");
   };
 
   return (

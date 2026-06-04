@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Layout } from "@/components/layout/Layout";
-import { Car, Loader2, User, Key, Briefcase } from "lucide-react";
+import { Car, Loader2, User, Briefcase } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -17,13 +17,12 @@ const schema = z.object({
   fullName: z.string().trim().min(2, "Enter your full name").max(100),
   email: z.string().trim().email("Invalid email").max(255),
   password: z.string().min(8, "At least 8 characters").max(72),
-  role: z.enum(["renter", "owner", "driver"]),
+  role: z.enum(["customer", "dealer"]),
 });
 
 const roleOptions = [
-  { id: "renter", title: "Rent cars", desc: "Browse and book vehicles for trips", Icon: User },
-  { id: "owner", title: "List my cars", desc: "Earn by sharing your vehicle", Icon: Key },
-  { id: "driver", title: "Drive for hire", desc: "Get hired as a professional driver", Icon: Briefcase },
+  { id: "customer", title: "I'm shopping", desc: "Browse, compare and finance vehicles", Icon: User },
+  { id: "dealer", title: "I sell vehicles", desc: "List inventory and manage leads", Icon: Briefcase },
 ] as const;
 
 const Signup = () => {
@@ -33,9 +32,9 @@ const Signup = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"renter" | "owner" | "driver">("renter");
+  const [role, setRole] = useState<"customer" | "dealer">("customer");
 
-  useEffect(() => { if (user) navigate("/dashboard", { replace: true }); }, [user, navigate]);
+  useEffect(() => { if (user) navigate("/account", { replace: true }); }, [user, navigate]);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,25 +45,25 @@ const Signup = () => {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
+        emailRedirectTo: `${window.location.origin}/account`,
         data: { full_name: fullName, role },
       },
     });
     setLoading(false);
     if (error) { toast.error(error.message); return; }
-    toast.success("Account created — welcome to AurumDrive");
-    navigate("/dashboard");
+    toast.success("Account created — welcome to AurumMotors");
+    navigate(role === "dealer" ? "/dealer" : "/account");
   };
 
   const handleGoogle = async () => {
     setLoading(true);
     const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: `${window.location.origin}/dashboard`,
+      redirect_uri: `${window.location.origin}/account`,
       extraParams: { role },
     });
     if (result.error) { toast.error(result.error.message ?? "Sign-in failed"); setLoading(false); return; }
     if (result.redirected) return;
-    navigate("/dashboard");
+    navigate("/account");
   };
 
   return (
@@ -74,13 +73,13 @@ const Signup = () => {
           <div className="inline-flex w-14 h-14 rounded-xl bg-gradient-gold items-center justify-center shadow-gold mb-6">
             <Car className="w-7 h-7 text-primary-foreground" strokeWidth={2.5} />
           </div>
-          <h1 className="text-4xl font-serif mb-2">Join AurumDrive</h1>
+          <h1 className="text-4xl font-serif mb-2">Join AurumMotors</h1>
           <p className="text-muted-foreground">Choose how you want to get started</p>
         </div>
 
         <Card className="p-8 bg-card/60 backdrop-blur border-border/60 shadow-elevated animate-fade-in">
           <Label className="text-sm uppercase tracking-widest text-muted-foreground mb-4 block">I want to</Label>
-          <RadioGroup value={role} onValueChange={(v) => setRole(v as typeof role)} className="grid md:grid-cols-3 gap-3 mb-8">
+          <RadioGroup value={role} onValueChange={(v) => setRole(v as typeof role)} className="grid md:grid-cols-2 gap-3 mb-8">
             {roleOptions.map(({ id, title, desc, Icon }) => (
               <label
                 key={id}
