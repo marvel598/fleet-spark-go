@@ -294,41 +294,52 @@ const VehicleDetail = () => {
 
           {/* SIDEBAR */}
           <aside className="space-y-4">
-            <Card className="p-6 bg-gradient-gold-soft border-primary/30 sticky top-20">
-              <div className="text-xs uppercase tracking-widest text-primary mb-1">Asking price</div>
-              <div className="font-serif text-4xl text-primary">{formatKES(Number(vehicle.price))}</div>
-              {vehicle.msrp && (
-                <div className="text-sm text-muted-foreground mt-1">MSRP {formatKES(Number(vehicle.msrp))}</div>
-              )}
+            {(vehicle.listing_type ?? "sale") !== "rent" && (
+              <Card className="p-6 bg-gradient-gold-soft border-primary/30">
+                <div className="text-xs uppercase tracking-widest text-primary mb-1">Asking price</div>
+                <div className="font-serif text-4xl text-primary">{formatKES(Number(vehicle.price))}</div>
+                {vehicle.msrp && (
+                  <div className="text-sm text-muted-foreground mt-1">MSRP {formatKES(Number(vehicle.msrp))}</div>
+                )}
 
-              <div className="grid grid-cols-1 gap-2 mt-5">
-                <Button variant="hero" onClick={() => openInquiry("test_drive")}><CarIcon className="w-4 h-4" /> Book test drive</Button>
-                <Button variant="outlineGold" onClick={() => openInquiry("info")}><MessageSquare className="w-4 h-4" /> Ask the dealer</Button>
-                <Button variant="outline" onClick={() => openInquiry("offer")}><Tag className="w-4 h-4" /> Make an offer</Button>
-              </div>
-
-              <div className="mt-6 pt-5 border-t border-border/40">
-                <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground mb-3"><Calculator className="w-3.5 h-3.5" /> Finance estimate</div>
-                <div className="font-serif text-3xl text-primary mb-3">{finance ? formatKES(finance.monthly) : "—"}<span className="text-xs text-muted-foreground"> /mo</span></div>
-                <div className="space-y-3 text-xs">
-                  <div>
-                    <div className="flex justify-between mb-1"><span className="text-muted-foreground">Down payment</span><span>{formatKES(down)}</span></div>
-                    <Slider value={[down]} onValueChange={(v) => setDown(v[0])} min={0} max={Number(vehicle.price)} step={10000} />
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-1"><span className="text-muted-foreground">APR</span><span>{apr.toFixed(1)}%</span></div>
-                    <Slider value={[apr]} onValueChange={(v) => setApr(v[0])} min={0} max={25} step={0.5} />
-                  </div>
-                  <div>
-                    <div className="flex justify-between mb-1"><span className="text-muted-foreground">Term</span><span>{term} mo</span></div>
-                    <Slider value={[term]} onValueChange={(v) => setTerm(v[0])} min={12} max={84} step={6} />
-                  </div>
+                <div className="grid grid-cols-1 gap-2 mt-5">
+                  <Button variant="hero" onClick={() => openInquiry("test_drive")}><CarIcon className="w-4 h-4" /> Book test drive</Button>
+                  <Button variant="outlineGold" onClick={() => openInquiry("info")}><MessageSquare className="w-4 h-4" /> Ask the dealer</Button>
+                  <Button variant="outline" onClick={() => openInquiry("offer")}><Tag className="w-4 h-4" /> Make an offer</Button>
                 </div>
-                <Button variant="ghost" size="sm" className="w-full mt-3" onClick={() => openInquiry("info")}>
-                  <FileText className="w-3.5 h-3.5" /> Apply for financing
-                </Button>
-              </div>
-            </Card>
+
+                <div className="mt-6 pt-5 border-t border-border/40">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-muted-foreground mb-3"><Calculator className="w-3.5 h-3.5" /> Finance estimate</div>
+                  <div className="font-serif text-3xl text-primary mb-3">{finance ? formatKES(finance.monthly) : "—"}<span className="text-xs text-muted-foreground"> /mo</span></div>
+                  <div className="space-y-3 text-xs">
+                    <div>
+                      <div className="flex justify-between mb-1"><span className="text-muted-foreground">Down payment</span><span>{formatKES(down)}</span></div>
+                      <Slider value={[down]} onValueChange={(v) => setDown(v[0])} min={0} max={Number(vehicle.price)} step={10000} />
+                    </div>
+                    <div>
+                      <div className="flex justify-between mb-1"><span className="text-muted-foreground">APR</span><span>{apr.toFixed(1)}%</span></div>
+                      <Slider value={[apr]} onValueChange={(v) => setApr(v[0])} min={0} max={25} step={0.5} />
+                    </div>
+                    <div>
+                      <div className="flex justify-between mb-1"><span className="text-muted-foreground">Term</span><span>{term} mo</span></div>
+                      <Slider value={[term]} onValueChange={(v) => setTerm(v[0])} min={12} max={84} step={6} />
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="sm" className="w-full mt-3" onClick={() => openInquiry("info")}>
+                    <FileText className="w-3.5 h-3.5" /> Apply for financing
+                  </Button>
+                </div>
+              </Card>
+            )}
+
+            {(vehicle.listing_type === "rent" || vehicle.listing_type === "both") && vehicle.daily_rate != null && (
+              <BookingWidget
+                vehicleId={vehicle.id}
+                dailyRate={Number(vehicle.daily_rate)}
+                minDays={vehicle.min_rental_days ?? 1}
+                maxDays={vehicle.max_rental_days ?? 30}
+              />
+            )}
 
             {/* Dealer card */}
             {dealer && (
