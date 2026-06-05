@@ -7,12 +7,15 @@ import { cn } from "@/lib/utils";
 import { NotificationsBell } from "@/components/NotificationsBell";
 
 const navItems = [
-  { to: "/inventory", label: "Inventory" },
+  { to: "/inventory", label: "Buy" },
+  { to: "/rentals", label: "Rent" },
   { to: "/compare", label: "Compare" },
   { to: "/reviews", label: "Reviews" },
   { to: "/finance/calculator", label: "Finance" },
   { to: "/dealer", label: "Dealer Hub", requireRole: "dealer" as const },
-  { to: "/account", label: "My Account", requireAuth: true },
+  { to: "/owner", label: "Owner Hub", requireRole: "owner" as const },
+  { to: "/trips", label: "My Trips", requireAuth: true },
+  { to: "/account", label: "Account", requireAuth: true },
 ];
 
 export function Header() {
@@ -39,7 +42,7 @@ export function Header() {
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-7">
+        <nav className="hidden md:flex items-center gap-5">
           {visibleItems.map((item) => (
             <Link
               key={item.to}
