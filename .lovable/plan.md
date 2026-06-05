@@ -1,63 +1,79 @@
-# Pivot to Car Dealership
+# Unify Sales + Rental Marketplace
 
-Replace the rental marketplace (bookings, owners, renters, escrow, tracking) with a dealership sales model. Big change — laid out in phases so you can ship and review incrementally.
+Restore the rental side, keep the dealership side, and merge them into one inventory with dual Buy/Rent flows.
 
-## Phase 1 — Schema + roles
+## Phase 1 — Schema unification
 
-Replace rental concepts with sales concepts. Keep `profiles`, `user_roles`, `role_audit_log`, `notifications`.
+**Extend `vehicles`** (single inventory)
+- `listing_type` enum: `sale` | `rent` | `both`
+- `daily_rate` numeric (nullable, required when rent/both)
+- `min_rental_days`, `max_rental_days` (defaults 1, 30)
+- `owner_id` uuid (nullable) — set when an `owner` lists a personal car for rent; `dealer_id` stays for dealership-listed vehicles. One of the two must be set (trigger check).
+- Keep all existing sale fields (price, msrp, condition, photos, etc.).
 
-**New tables**
-- `vehicles` — make, model, year, trim, body_type, mileage, price, msrp, condition (new/used/certified), fuel_type, transmission, drivetrain, exterior_color, interior_color, vin, stock_number, photos[], features[], description, status (available/pending/sold), dealer_id
-- `dealers` — name, logo, address, city, phone, email, website, hours, about
-- `inquiries` — vehicle_id, user_id, name, email, phone, message, type (info/test_drive/finance/offer), preferred_date, status (new/contacted/closed)
-- `finance_applications` — vehicle_id, user_id, vehicle_price, down_payment, term_months, apr, monthly_payment, employment info, status
-- `vehicle_reviews` — expert reviews tied to make/model/year (rating, title, body, author, pros[], cons[])
-- `comparisons` — user_id, vehicle_ids[] (saved comparison sets)
-- `saved_vehicles` — user_id, vehicle_id (favorites)
+**Restore tables**
+- `bookings` — vehicle_id, renter_id, start_date, end_date, days, daily_rate, subtotal, service_fee, total, owner_payout, status (pending/confirmed/active/completed/cancelled), pickup_location, dropoff_location.
+- `escrow_transactions` — booking_id, amount, owner_payout, platform_fee, status (held/released/refunded), provider_ref.
+- `trip_reviews` (renamed from old `reviews`) — booking_id, vehicle_id, renter_id, owner_rating, vehicle_rating, comment. Sales `vehicle_reviews` (expert) stays separate.
 
-**Roles** swap `owner`/`renter`/`driver` → `customer`, `dealer`, `admin` (keep admin). Migrate existing role rows to `customer`.
+**Triggers (restored, adapted)**
+- `validate_booking_insert` — start < end, vehicle.listing_type in (rent,both), no overlap with confirmed/active.
+- `protect_booking_financials` — block edits to money fields after insert.
+- `notify_booking_event` — notification on status changes.
+- `check_vehicle_availability` — replaces old `check_car_availability`.
 
-**Drop** `bookings`, `cars`, `escrow_transactions`, `tracking_logs`, related triggers (`validate_booking_insert`, `protect_booking_financials`, `notify_booking_event`, `check_car_availability`), `car-photos` bucket renamed conceptually to `vehicle-photos`.
+**Roles** — extend enum to: `customer`, `dealer`, `owner`, `renter`, `admin`.
+- `dealer`: lists for sale (and optionally rent) via dealership.
+- `owner`: peer-to-peer rental host.
+- `renter`: rents vehicles.
+- `customer`: buys vehicles.
+- A user can hold multiple roles (e.g. renter+customer).
 
-**RLS**: `vehicles` public SELECT for `status='available'`, dealers CRUD their own; `inquiries` customers insert/view own + dealers view their vehicle's; `finance_applications` private to applicant + dealer; `vehicle_reviews` public read, admin write; `saved_vehicles`/`comparisons` private to user. GRANTs as required.
+**RLS additions**
+- `bookings`: renter sees own; owner/dealer sees bookings on their vehicles; admin all. Insert by authenticated renter only.
+- `escrow_transactions`: parties to the booking + admin; no client writes (edge function only).
+- `trip_reviews`: public read, renter writes own after completed booking.
+- `vehicles`: existing dealer policy + add owner CRUD on their own listings.
 
-## Phase 2 — Public pages
+## Phase 2 — Frontend unification
 
-- **Homepage** (`/`) — hero with prominent search bar (make/model/price), featured vehicles carousel, promotions strip, browse-by-body-type tiles, "why buy from us" trust band.
-- **Inventory / Search** (`/inventory`) — filter sidebar (make, model, year range, price range, mileage, fuel, transmission, body type, location), result grid, sort, pagination, save-search.
-- **Vehicle Detail** (`/vehicle/:id`) — photo gallery, spec table, price + financing widget, dealer info card, CTA buttons (Inquire, Test Drive, Apply Financing, Make Offer), similar vehicles, embedded reviews for that make/model.
-- **Compare** (`/compare`) — pick up to 4, side-by-side spec table, highlight differences.
-- **Reviews** (`/reviews`, `/reviews/:make/:model`) — expert review listings.
+**Routes**
+- `/` — homepage with two hero CTAs: "Buy a car" → `/inventory`, "Rent a car" → `/rentals`. Featured strip shows both, badged.
+- `/inventory` — sales filter (existing). Add `listing_type` filter chip "For sale".
+- `/rentals` — new search page: date range + location filters, daily rate range, fuel/transmission. Pulls vehicles where `listing_type in (rent,both)`.
+- `/vehicle/:id` — unified detail page. Shows Buy panel if sale/both, Rent panel (date picker + price breakdown) if rent/both. Dual CTAs.
+- `/trips` — restored renter "My Bookings" page.
+- `/account` — adds Bookings tab next to Saved/Inquiries/Finance.
+- `/owner` — new owner hub: list-a-car, my listings, incoming bookings, payouts.
+- `/dealer` — unchanged, but vehicle edit form gains rental fields when listing_type ≠ sale.
 
-## Phase 3 — Tools + conversion
+**Signup** — role chooser becomes 4-way: Buy / Sell (dealer) / Rent / Host a car (owner). Multi-select allowed.
 
-- **Finance Calculator** (`/finance/calculator`) — price, down payment, trade-in, APR, term → monthly payment, total interest, amortization preview. Standalone + embedded on vehicle page.
-- **Inquiry / Test Drive / Offer forms** — modal flow from vehicle page, writes to `inquiries`.
-- **Financing application** — multi-step form, writes to `finance_applications`.
-- **Saved vehicles + comparisons** — auth-gated.
+**Header** — add "Rentals" nav item between Inventory and Compare. "Owner Hub" link when role=owner. Keep Dealer Hub for dealers.
 
-## Phase 4 — Dashboards
+## Phase 3 — Booking + escrow flow
 
-- **Customer dashboard** (`/account`) — saved vehicles, my inquiries, finance applications status.
-- **Dealer dashboard** (`/dealer`) — inventory CRUD (list/add/edit/photos/status), inquiries inbox with statuses, finance application pipeline, simple analytics (views, leads, conversion).
-- **Admin** — keep audit log, manage dealers, manage expert reviews, role grants.
+- Restore `src/lib/pricing.ts` usage on the rent panel (30/70 split kept).
+- Booking widget on `/vehicle/:id` (date range → price breakdown → confirm → insert booking).
+- Owner hub: confirm / cancel / mark-completed actions.
+- Escrow: stub provider (same pattern as before) — held on confirm, released on completed, refunded on cancel. Implemented via edge function `booking-escrow`.
+- Notifications: booking created/confirmed/cancelled/completed → both parties.
 
-## Phase 5 — Polish
+## Phase 4 — Polish
 
-Refresh homepage/inventory under the existing Midnight Indigo palette + lifestyle typography + hero-grid layout. Re-run security scan after the schema swap.
+- Vehicle card shows price badge (sale) and/or "/day" badge (rent) depending on listing_type.
+- JSON-LD: keep `Vehicle` schema for sale; add `Product`/`Offer` rentals variant.
+- Security scan re-run after migration.
 
-## Technical details
+## Technical notes
 
-- Tech: existing Vite + React + Tailwind + shadcn + Lovable Cloud (Supabase). No new providers.
-- Auth: keep existing email/password + Google flow; signup chooses `customer` or `dealer`.
-- Storage: rename usage to `vehicle-photos` bucket (or reuse `car-photos` with new path prefix).
-- Migration strategy: destructive — drop rental tables, no data migration (rental data is test).
-- SEO: vehicle detail pages get JSON-LD `Vehicle` schema, canonical URLs, dynamic title/meta.
+- Existing migration kept; this is additive (re-adds dropped tables under new names where needed). No data loss on current dealership data.
+- Storage bucket stays `car-photos` (already public).
+- Edge function: `booking-escrow` for state transitions, uses service role.
+- No new third-party providers.
 
-## What I need from you
+## What ships in round 1
 
-This is ~5 phases of work. Tell me:
+I'll execute **Phase 1 (full migration) + Phase 2 routes scaffolding + Phase 3 booking flow** in one go. Phase 4 polish follows after you've clicked through.
 
-1. **Go destructive?** Drop `bookings`/`cars`/`escrow`/`tracking` cleanly, or archive them?
-2. **Start where?** Recommend **Phase 1 + Phase 2** in the first round so you see the new model and homepage/inventory immediately. Phases 3–5 follow.
-3. **Multi-dealer or single dealer?** The plan assumes multi-dealer (marketplace). If you're a single dealership, I'll simplify (drop `dealers` table, hardcode dealer info).
+If you want to trim (e.g. defer owner hub, defer escrow to a stub), tell me before I start.

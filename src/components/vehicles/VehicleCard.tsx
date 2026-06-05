@@ -18,11 +18,16 @@ export interface VehicleSummary {
   condition?: string | null;
   location?: string | null;
   status?: string | null;
+  listing_type?: string | null;
+  daily_rate?: number | null;
 }
+
+const fmt = (n: number) => new Intl.NumberFormat("en-KE", { maximumFractionDigits: 0 }).format(n);
 
 export function VehicleCard({ vehicle }: { vehicle: VehicleSummary }) {
   const photo = vehicle.photos?.[0];
-  const formatted = new Intl.NumberFormat("en-KE", { maximumFractionDigits: 0 }).format(Number(vehicle.price));
+  const showSale = vehicle.listing_type !== "rent";
+  const showRent = vehicle.listing_type === "rent" || vehicle.listing_type === "both";
   return (
     <Link to={`/vehicle/${vehicle.id}`} className="group block">
       <Card className="overflow-hidden bg-card border-border/60 transition-elegant hover:border-primary/50 hover:shadow-elevated hover:-translate-y-1">
@@ -38,13 +43,22 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleSummary }) {
                 {vehicle.condition}
               </Badge>
             )}
+            {vehicle.listing_type === "rent" && <Badge className="bg-primary text-primary-foreground">For rent</Badge>}
+            {vehicle.listing_type === "both" && <Badge className="bg-primary text-primary-foreground">Buy or rent</Badge>}
             {vehicle.status === "sold" && <Badge variant="destructive">Sold</Badge>}
             {vehicle.status === "pending" && <Badge variant="secondary">Pending</Badge>}
           </div>
-          <div className="absolute bottom-3 right-3">
-            <Badge className="bg-background/80 backdrop-blur text-primary border border-primary/30">
-              KSh {formatted}
-            </Badge>
+          <div className="absolute bottom-3 right-3 flex flex-col items-end gap-1">
+            {showSale && (
+              <Badge className="bg-background/80 backdrop-blur text-primary border border-primary/30">
+                KSh {fmt(Number(vehicle.price))}
+              </Badge>
+            )}
+            {showRent && vehicle.daily_rate != null && (
+              <Badge className="bg-background/80 backdrop-blur text-primary border border-primary/30">
+                KSh {fmt(Number(vehicle.daily_rate))}/day
+              </Badge>
+            )}
           </div>
         </div>
         <div className="p-5">

@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          created_at: string
+          daily_rate: number
+          days: number
+          dropoff_location: string | null
+          end_date: string
+          id: string
+          notes: string | null
+          owner_payout: number
+          pickup_location: string | null
+          renter_id: string
+          service_fee: number
+          start_date: string
+          status: Database["public"]["Enums"]["booking_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          created_at?: string
+          daily_rate: number
+          days: number
+          dropoff_location?: string | null
+          end_date: string
+          id?: string
+          notes?: string | null
+          owner_payout: number
+          pickup_location?: string | null
+          renter_id: string
+          service_fee: number
+          start_date: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          subtotal: number
+          total: number
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          created_at?: string
+          daily_rate?: number
+          days?: number
+          dropoff_location?: string | null
+          end_date?: string
+          id?: string
+          notes?: string | null
+          owner_payout?: number
+          pickup_location?: string | null
+          renter_id?: string
+          service_fee?: number
+          start_date?: string
+          status?: Database["public"]["Enums"]["booking_status"]
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: []
+      }
       comparisons: {
         Row: {
           created_at: string
@@ -92,6 +152,42 @@ export type Database = {
           slug?: string | null
           updated_at?: string
           website?: string | null
+        }
+        Relationships: []
+      }
+      escrow_transactions: {
+        Row: {
+          amount: number
+          booking_id: string
+          created_at: string
+          id: string
+          owner_payout: number
+          platform_fee: number
+          provider_ref: string | null
+          status: Database["public"]["Enums"]["escrow_status"]
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          booking_id: string
+          created_at?: string
+          id?: string
+          owner_payout: number
+          platform_fee: number
+          provider_ref?: string | null
+          status?: Database["public"]["Enums"]["escrow_status"]
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          booking_id?: string
+          created_at?: string
+          id?: string
+          owner_payout?: number
+          platform_fee?: number
+          provider_ref?: string | null
+          status?: Database["public"]["Enums"]["escrow_status"]
+          updated_at?: string
         }
         Relationships: []
       }
@@ -294,36 +390,6 @@ export type Database = {
         }
         Relationships: []
       }
-      reviews: {
-        Row: {
-          booking_id: string
-          car_id: string
-          comment: string | null
-          created_at: string
-          id: string
-          rating: number
-          renter_id: string
-        }
-        Insert: {
-          booking_id: string
-          car_id: string
-          comment?: string | null
-          created_at?: string
-          id?: string
-          rating: number
-          renter_id: string
-        }
-        Update: {
-          booking_id?: string
-          car_id?: string
-          comment?: string | null
-          created_at?: string
-          id?: string
-          rating?: number
-          renter_id?: string
-        }
-        Relationships: []
-      }
       role_audit_log: {
         Row: {
           action: string
@@ -379,6 +445,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      trip_reviews: {
+        Row: {
+          booking_id: string
+          comment: string | null
+          created_at: string
+          id: string
+          owner_rating: number | null
+          renter_id: string
+          vehicle_id: string
+          vehicle_rating: number
+        }
+        Insert: {
+          booking_id: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          owner_rating?: number | null
+          renter_id: string
+          vehicle_id: string
+          vehicle_rating: number
+        }
+        Update: {
+          booking_id?: string
+          comment?: string | null
+          created_at?: string
+          id?: string
+          owner_rating?: number | null
+          renter_id?: string
+          vehicle_id?: string
+          vehicle_rating?: number
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {
@@ -454,7 +553,8 @@ export type Database = {
           body_type: Database["public"]["Enums"]["body_type"] | null
           condition: Database["public"]["Enums"]["vehicle_condition"]
           created_at: string
-          dealer_id: string
+          daily_rate: number | null
+          dealer_id: string | null
           description: string | null
           drivetrain: Database["public"]["Enums"]["drivetrain"] | null
           engine: string | null
@@ -463,11 +563,15 @@ export type Database = {
           fuel_type: Database["public"]["Enums"]["fuel_type"]
           id: string
           interior_color: string | null
+          listing_type: Database["public"]["Enums"]["listing_type"]
           location: string | null
           make: string
+          max_rental_days: number
           mileage: number | null
+          min_rental_days: number
           model: string
           msrp: number | null
+          owner_id: string | null
           photos: string[] | null
           price: number
           status: Database["public"]["Enums"]["vehicle_status"]
@@ -483,7 +587,8 @@ export type Database = {
           body_type?: Database["public"]["Enums"]["body_type"] | null
           condition?: Database["public"]["Enums"]["vehicle_condition"]
           created_at?: string
-          dealer_id: string
+          daily_rate?: number | null
+          dealer_id?: string | null
           description?: string | null
           drivetrain?: Database["public"]["Enums"]["drivetrain"] | null
           engine?: string | null
@@ -492,11 +597,15 @@ export type Database = {
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
           id?: string
           interior_color?: string | null
+          listing_type?: Database["public"]["Enums"]["listing_type"]
           location?: string | null
           make: string
+          max_rental_days?: number
           mileage?: number | null
+          min_rental_days?: number
           model: string
           msrp?: number | null
+          owner_id?: string | null
           photos?: string[] | null
           price: number
           status?: Database["public"]["Enums"]["vehicle_status"]
@@ -512,7 +621,8 @@ export type Database = {
           body_type?: Database["public"]["Enums"]["body_type"] | null
           condition?: Database["public"]["Enums"]["vehicle_condition"]
           created_at?: string
-          dealer_id?: string
+          daily_rate?: number | null
+          dealer_id?: string | null
           description?: string | null
           drivetrain?: Database["public"]["Enums"]["drivetrain"] | null
           engine?: string | null
@@ -521,11 +631,15 @@ export type Database = {
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
           id?: string
           interior_color?: string | null
+          listing_type?: Database["public"]["Enums"]["listing_type"]
           location?: string | null
           make?: string
+          max_rental_days?: number
           mileage?: number | null
+          min_rental_days?: number
           model?: string
           msrp?: number | null
+          owner_id?: string | null
           photos?: string[] | null
           price?: number
           status?: Database["public"]["Enums"]["vehicle_status"]
@@ -599,7 +713,14 @@ export type Database = {
         | "van"
         | "minivan"
         | "crossover"
+      booking_status:
+        | "pending"
+        | "confirmed"
+        | "active"
+        | "completed"
+        | "cancelled"
       drivetrain: "fwd" | "rwd" | "awd" | "4wd"
+      escrow_status: "held" | "released" | "refunded"
       finance_status:
         | "submitted"
         | "reviewing"
@@ -609,6 +730,7 @@ export type Database = {
       fuel_type: "petrol" | "diesel" | "hybrid" | "electric" | "plugin_hybrid"
       inquiry_status: "new" | "contacted" | "closed"
       inquiry_type: "info" | "test_drive" | "finance" | "offer"
+      listing_type: "sale" | "rent" | "both"
       transmission_type: "automatic" | "manual" | "cvt" | "dct"
       vehicle_condition: "new" | "used" | "certified"
       vehicle_status: "available" | "pending" | "sold" | "draft"
@@ -752,7 +874,15 @@ export const Constants = {
         "minivan",
         "crossover",
       ],
+      booking_status: [
+        "pending",
+        "confirmed",
+        "active",
+        "completed",
+        "cancelled",
+      ],
       drivetrain: ["fwd", "rwd", "awd", "4wd"],
+      escrow_status: ["held", "released", "refunded"],
       finance_status: [
         "submitted",
         "reviewing",
@@ -763,6 +893,7 @@ export const Constants = {
       fuel_type: ["petrol", "diesel", "hybrid", "electric", "plugin_hybrid"],
       inquiry_status: ["new", "contacted", "closed"],
       inquiry_type: ["info", "test_drive", "finance", "offer"],
+      listing_type: ["sale", "rent", "both"],
       transmission_type: ["automatic", "manual", "cvt", "dct"],
       vehicle_condition: ["new", "used", "certified"],
       vehicle_status: ["available", "pending", "sold", "draft"],
