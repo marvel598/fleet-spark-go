@@ -20,10 +20,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { VehicleCard, type VehicleSummary } from "@/components/vehicles/VehicleCard";
 import { calcMonthlyPayment, formatKES } from "@/lib/finance";
+import { BookingWidget } from "@/components/bookings/BookingWidget";
 
 interface Vehicle {
   id: string;
-  dealer_id: string;
+  dealer_id: string | null;
+  owner_id: string | null;
   make: string; model: string; year: number; trim: string | null;
   price: number; msrp: number | null;
   mileage: number | null;
@@ -34,6 +36,10 @@ interface Vehicle {
   photos: string[] | null; features: string[] | null;
   description: string | null; location: string | null;
   status: string | null;
+  listing_type: string | null;
+  daily_rate: number | null;
+  min_rental_days: number | null;
+  max_rental_days: number | null;
 }
 
 interface Dealer {
@@ -81,12 +87,14 @@ const VehicleDetail = () => {
       setVehicle(v as Vehicle);
       setDown(Math.round(Number(v.price) * 0.2));
 
-      const { data: d } = await supabase
-        .from("dealers")
-        .select("id,name,phone,email,address,city,website,about")
-        .eq("id", v.dealer_id)
-        .maybeSingle();
-      setDealer(d as Dealer);
+      if (v.dealer_id) {
+        const { data: d } = await supabase
+          .from("dealers")
+          .select("id,name,phone,email,address,city,website,about")
+          .eq("id", v.dealer_id)
+          .maybeSingle();
+        setDealer(d as Dealer);
+      }
 
       const { data: sim } = await supabase
         .from("vehicles")
