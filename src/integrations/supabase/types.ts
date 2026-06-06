@@ -690,6 +690,36 @@ export type Database = {
         }
         Relationships: []
       }
+      trip_reviews_public: {
+        Row: {
+          booking_id: string | null
+          comment: string | null
+          created_at: string | null
+          id: string | null
+          owner_rating: number | null
+          vehicle_id: string | null
+          vehicle_rating: number | null
+        }
+        Insert: {
+          booking_id?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string | null
+          owner_rating?: number | null
+          vehicle_id?: string | null
+          vehicle_rating?: number | null
+        }
+        Update: {
+          booking_id?: string | null
+          comment?: string | null
+          created_at?: string | null
+          id?: string | null
+          owner_rating?: number | null
+          vehicle_id?: string | null
+          vehicle_rating?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       has_role: {
