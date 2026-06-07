@@ -19,6 +19,8 @@ export type Database = {
           created_at: string
           daily_rate: number
           days: number
+          delivery_distance_km: number
+          delivery_fee: number
           dropoff_location: string | null
           end_date: string
           id: string
@@ -26,6 +28,7 @@ export type Database = {
           owner_payout: number
           pickup_location: string | null
           renter_id: string
+          return_distance_km: number
           service_fee: number
           start_date: string
           status: Database["public"]["Enums"]["booking_status"]
@@ -38,6 +41,8 @@ export type Database = {
           created_at?: string
           daily_rate: number
           days: number
+          delivery_distance_km?: number
+          delivery_fee?: number
           dropoff_location?: string | null
           end_date: string
           id?: string
@@ -45,6 +50,7 @@ export type Database = {
           owner_payout: number
           pickup_location?: string | null
           renter_id: string
+          return_distance_km?: number
           service_fee: number
           start_date: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -57,6 +63,8 @@ export type Database = {
           created_at?: string
           daily_rate?: number
           days?: number
+          delivery_distance_km?: number
+          delivery_fee?: number
           dropoff_location?: string | null
           end_date?: string
           id?: string
@@ -64,6 +72,7 @@ export type Database = {
           owner_payout?: number
           pickup_location?: string | null
           renter_id?: string
+          return_distance_km?: number
           service_fee?: number
           start_date?: string
           status?: Database["public"]["Enums"]["booking_status"]
@@ -555,17 +564,22 @@ export type Database = {
           created_at: string
           daily_rate: number | null
           dealer_id: string | null
+          delivery_available: boolean
+          delivery_fee_base: number
+          delivery_fee_per_km: number
           description: string | null
           drivetrain: Database["public"]["Enums"]["drivetrain"] | null
           engine: string | null
           exterior_color: string | null
           features: string[] | null
+          free_delivery_radius_km: number
           fuel_type: Database["public"]["Enums"]["fuel_type"]
           id: string
           interior_color: string | null
           listing_type: Database["public"]["Enums"]["listing_type"]
           location: string | null
           make: string
+          max_delivery_km: number
           max_rental_days: number
           mileage: number | null
           min_rental_days: number
@@ -589,17 +603,22 @@ export type Database = {
           created_at?: string
           daily_rate?: number | null
           dealer_id?: string | null
+          delivery_available?: boolean
+          delivery_fee_base?: number
+          delivery_fee_per_km?: number
           description?: string | null
           drivetrain?: Database["public"]["Enums"]["drivetrain"] | null
           engine?: string | null
           exterior_color?: string | null
           features?: string[] | null
+          free_delivery_radius_km?: number
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
           id?: string
           interior_color?: string | null
           listing_type?: Database["public"]["Enums"]["listing_type"]
           location?: string | null
           make: string
+          max_delivery_km?: number
           max_rental_days?: number
           mileage?: number | null
           min_rental_days?: number
@@ -623,17 +642,22 @@ export type Database = {
           created_at?: string
           daily_rate?: number | null
           dealer_id?: string | null
+          delivery_available?: boolean
+          delivery_fee_base?: number
+          delivery_fee_per_km?: number
           description?: string | null
           drivetrain?: Database["public"]["Enums"]["drivetrain"] | null
           engine?: string | null
           exterior_color?: string | null
           features?: string[] | null
+          free_delivery_radius_km?: number
           fuel_type?: Database["public"]["Enums"]["fuel_type"]
           id?: string
           interior_color?: string | null
           listing_type?: Database["public"]["Enums"]["listing_type"]
           location?: string | null
           make?: string
+          max_delivery_km?: number
           max_rental_days?: number
           mileage?: number | null
           min_rental_days?: number
