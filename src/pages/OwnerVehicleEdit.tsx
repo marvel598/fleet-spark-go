@@ -31,6 +31,9 @@ const OwnerVehicleEdit = () => {
     fuel_type: "petrol", transmission: "automatic", drivetrain: "fwd",
     location: "", description: "", status: "available",
     features_text: "", photos: [] as string[],
+    delivery_available: false,
+    delivery_fee_base: 0, delivery_fee_per_km: 0,
+    free_delivery_radius_km: 0, max_delivery_km: 0,
   });
 
   useEffect(() => {
@@ -52,6 +55,11 @@ const OwnerVehicleEdit = () => {
             fuel_type: v.fuel_type ?? "petrol", transmission: v.transmission ?? "automatic", drivetrain: v.drivetrain ?? "fwd",
             location: v.location ?? "", description: v.description ?? "", status: v.status ?? "available",
             features_text: (v.features ?? []).join(", "), photos: v.photos ?? [],
+            delivery_available: !!v.delivery_available,
+            delivery_fee_base: Number(v.delivery_fee_base ?? 0),
+            delivery_fee_per_km: Number(v.delivery_fee_per_km ?? 0),
+            free_delivery_radius_km: Number(v.free_delivery_radius_km ?? 0),
+            max_delivery_km: Number(v.max_delivery_km ?? 0),
           });
         }
       }
@@ -92,6 +100,11 @@ const OwnerVehicleEdit = () => {
       status: form.status as any,
       features: form.features_text.split(",").map((s) => s.trim()).filter(Boolean),
       photos: form.photos,
+      delivery_available: form.delivery_available,
+      delivery_fee_base: Number(form.delivery_fee_base) || 0,
+      delivery_fee_per_km: Number(form.delivery_fee_per_km) || 0,
+      free_delivery_radius_km: Number(form.free_delivery_radius_km) || 0,
+      max_delivery_km: Number(form.max_delivery_km) || 0,
     };
     const { error } = isNew
       ? await supabase.from("vehicles").insert(payload)
@@ -169,6 +182,25 @@ const OwnerVehicleEdit = () => {
               </Field>
               <Field label="Pick-up location"><Input value={form.location} onChange={(e) => update("location", e.target.value)} placeholder="Nairobi CBD" /></Field>
             </div>
+          </Card>
+
+          <Card className="p-6 bg-card/60 border-border/60 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="font-serif text-xl">Delivery & pickup</h2>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input type="checkbox" checked={form.delivery_available} onChange={(e) => update("delivery_available", e.target.checked)} />
+                Offer delivery
+              </label>
+            </div>
+            {form.delivery_available && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <Field label="Base fee (KSh)"><Input type="number" min={0} value={form.delivery_fee_base} onChange={(e) => update("delivery_fee_base", +e.target.value)} /></Field>
+                <Field label="Per km (KSh)"><Input type="number" min={0} value={form.delivery_fee_per_km} onChange={(e) => update("delivery_fee_per_km", +e.target.value)} /></Field>
+                <Field label="Free within (km)"><Input type="number" min={0} value={form.free_delivery_radius_km} onChange={(e) => update("free_delivery_radius_km", +e.target.value)} /></Field>
+                <Field label="Max distance (km, 0 = none)"><Input type="number" min={0} value={form.max_delivery_km} onChange={(e) => update("max_delivery_km", +e.target.value)} /></Field>
+              </div>
+            )}
+            {!form.delivery_available && <p className="text-sm text-muted-foreground">Renters will pick up at your listed location.</p>}
           </Card>
 
           <Card className="p-6 bg-card/60 border-border/60 space-y-4">

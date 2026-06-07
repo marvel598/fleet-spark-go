@@ -40,6 +40,11 @@ interface Vehicle {
   daily_rate: number | null;
   min_rental_days: number | null;
   max_rental_days: number | null;
+  delivery_available?: boolean | null;
+  delivery_fee_base?: number | null;
+  delivery_fee_per_km?: number | null;
+  free_delivery_radius_km?: number | null;
+  max_delivery_km?: number | null;
 }
 
 interface Dealer {
@@ -338,6 +343,14 @@ const VehicleDetail = () => {
                 dailyRate={Number(vehicle.daily_rate)}
                 minDays={vehicle.min_rental_days ?? 1}
                 maxDays={vehicle.max_rental_days ?? 30}
+                baseLocation={vehicle.location}
+                delivery={{
+                  delivery_available: !!vehicle.delivery_available,
+                  delivery_fee_base: Number(vehicle.delivery_fee_base ?? 0),
+                  delivery_fee_per_km: Number(vehicle.delivery_fee_per_km ?? 0),
+                  free_delivery_radius_km: Number(vehicle.free_delivery_radius_km ?? 0),
+                  max_delivery_km: Number(vehicle.max_delivery_km ?? 0),
+                }}
               />
             )}
 
