@@ -4,26 +4,26 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, KeyRound } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Loader2, KeyRound, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { calculatePrice, daysBetween } from "@/lib/pricing";
+import { calculatePrice, calculateLegFee, daysBetween, type DeliveryConfig } from "@/lib/pricing";
 
 const fmt = (n: number) => new Intl.NumberFormat("en-KE", { maximumFractionDigits: 0 }).format(n);
 const today = () => new Date().toISOString().slice(0, 10);
 
-export function BookingWidget({
-  vehicleId,
-  dailyRate,
-  minDays,
-  maxDays,
-}: {
+interface Props {
   vehicleId: string;
   dailyRate: number;
   minDays: number;
   maxDays: number;
-}) {
+  baseLocation?: string | null;
+  delivery?: DeliveryConfig;
+}
+
+export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLocation, delivery }: Props) {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [start, setStart] = useState(today());
@@ -32,24 +32,55 @@ export function BookingWidget({
     d.setDate(d.getDate() + Math.max(2, minDays));
     return d.toISOString().slice(0, 10);
   });
-  const [pickup, setPickup] = useState("");
   const [notes, setNotes] = useState("");
   const [busy, setBusy] = useState(false);
+
+  const cfg: DeliveryConfig = delivery ?? {
+    delivery_available: false,
+    delivery_fee_base: 0,
+    delivery_fee_per_km: 0,
+    free_delivery_radius_km: 0,
+    max_delivery_km: 0,
+  };
+
+  const [wantDelivery, setWantDelivery] = useState(false);
+  const [pickupLocation, setPickupLocation] = useState("");
+  const [pickupKm, setPickupKm] = useState<string>("");
+  const [sameReturn, setSameReturn] = useState(true);
+  const [dropoffLocation, setDropoffLocation] = useState("");
+  const [dropoffKm, setDropoffKm] = useState<string>("");
+
+  const pickupKmNum = Math.max(0, Number(pickupKm) || 0);
+  const dropoffKmNum = sameReturn ? pickupKmNum : Math.max(0, Number(dropoffKm) || 0);
+
+  const pickupFee = cfg.delivery_available && wantDelivery ? calculateLegFee(pickupKmNum, cfg) : 0;
+  const dropoffFee = cfg.delivery_available && wantDelivery ? calculateLegFee(dropoffKmNum, cfg) : 0;
+  const deliveryFee = (pickupFee ?? 0) + (dropoffFee ?? 0);
+  const deliveryError =
+    cfg.delivery_available && wantDelivery && (pickupFee === null || dropoffFee === null)
+      ? `Delivery distance exceeds the host's max of ${cfg.max_delivery_km} km`
+      : null;
 
   const calc = useMemo(() => {
     const s = new Date(start);
     const e = new Date(end);
     if (isNaN(s.getTime()) || isNaN(e.getTime()) || e <= s) return null;
     const days = daysBetween(s, e);
-    return { days, ...calculatePrice(dailyRate, days) };
-  }, [start, end, dailyRate]);
+    return { days, ...calculatePrice(dailyRate, days, deliveryError ? 0 : deliveryFee) };
+  }, [start, end, dailyRate, deliveryFee, deliveryError]);
 
   const book = async () => {
     if (!user) { navigate("/login"); return; }
     if (!calc) { toast.error("Pick a valid date range"); return; }
     if (calc.days < minDays) { toast.error(`Minimum ${minDays} day(s)`); return; }
     if (calc.days > maxDays) { toast.error(`Maximum ${maxDays} day(s)`); return; }
+    if (deliveryError) { toast.error(deliveryError); return; }
+    if (wantDelivery && cfg.delivery_available && !pickupLocation.trim()) {
+      toast.error("Enter a delivery address");
+      return;
+    }
     setBusy(true);
+    const finalDropoffLocation = sameReturn ? pickupLocation : dropoffLocation;
     const { error } = await supabase.from("bookings").insert({
       vehicle_id: vehicleId,
       renter_id: user.id,
@@ -61,7 +92,11 @@ export function BookingWidget({
       service_fee: calc.serviceFee,
       total: calc.total,
       owner_payout: calc.ownerPayout,
-      pickup_location: pickup || null,
+      delivery_fee: calc.deliveryFee,
+      delivery_distance_km: wantDelivery ? pickupKmNum : 0,
+      return_distance_km: wantDelivery ? dropoffKmNum : 0,
+      pickup_location: wantDelivery ? pickupLocation : (baseLocation || null),
+      dropoff_location: wantDelivery ? finalDropoffLocation : (baseLocation || null),
       notes: notes || null,
     });
     setBusy(false);
@@ -79,18 +114,59 @@ export function BookingWidget({
         <div><Label className="text-xs">Pick-up</Label><Input type="date" value={start} min={today()} onChange={(e) => setStart(e.target.value)} /></div>
         <div><Label className="text-xs">Return</Label><Input type="date" value={end} min={start} onChange={(e) => setEnd(e.target.value)} /></div>
       </div>
-      <div className="mb-3"><Label className="text-xs">Pick-up location (optional)</Label><Input value={pickup} onChange={(e) => setPickup(e.target.value)} placeholder="Nairobi CBD" /></div>
+
+      {cfg.delivery_available ? (
+        <div className="border border-border/60 rounded-lg p-3 mb-3 space-y-3">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="delivery-toggle" className="flex items-center gap-2 text-sm cursor-pointer">
+              <Truck className="w-4 h-4 text-primary" /> Have it delivered
+            </Label>
+            <Switch id="delivery-toggle" checked={wantDelivery} onCheckedChange={setWantDelivery} />
+          </div>
+          {!wantDelivery && (
+            <p className="text-xs text-muted-foreground">Free pick-up at {baseLocation || "host location"}.</p>
+          )}
+          {wantDelivery && (
+            <>
+              <div className="text-xs text-muted-foreground">
+                Free within {cfg.free_delivery_radius_km} km · KSh {fmt(cfg.delivery_fee_base)} base + KSh {fmt(cfg.delivery_fee_per_km)} per extra km
+                {cfg.max_delivery_km > 0 ? ` · max ${cfg.max_delivery_km} km` : ""}
+              </div>
+              <div className="grid grid-cols-[1fr,90px] gap-2">
+                <div><Label className="text-xs">Delivery address</Label><Input value={pickupLocation} onChange={(e) => setPickupLocation(e.target.value)} placeholder="Westlands, Nairobi" /></div>
+                <div><Label className="text-xs">Distance (km)</Label><Input inputMode="decimal" value={pickupKm} onChange={(e) => setPickupKm(e.target.value.replace(/[^\d.]/g, ""))} /></div>
+              </div>
+              <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                <input type="checkbox" checked={sameReturn} onChange={(e) => setSameReturn(e.target.checked)} /> Return to the same place
+              </label>
+              {!sameReturn && (
+                <div className="grid grid-cols-[1fr,90px] gap-2">
+                  <div><Label className="text-xs">Return address</Label><Input value={dropoffLocation} onChange={(e) => setDropoffLocation(e.target.value)} placeholder="JKIA, Nairobi" /></div>
+                  <div><Label className="text-xs">Distance (km)</Label><Input inputMode="decimal" value={dropoffKm} onChange={(e) => setDropoffKm(e.target.value.replace(/[^\d.]/g, ""))} /></div>
+                </div>
+              )}
+              {deliveryError && <p className="text-xs text-destructive">{deliveryError}</p>}
+            </>
+          )}
+        </div>
+      ) : (
+        <div className="mb-3 text-xs text-muted-foreground">Pick-up only · {baseLocation || "host location"}</div>
+      )}
+
       <div className="mb-4"><Label className="text-xs">Notes (optional)</Label><Input value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Anything the host should know" /></div>
 
       {calc && (
         <div className="space-y-1.5 text-sm border-t border-border/40 pt-3 mb-4">
           <div className="flex justify-between text-muted-foreground"><span>KSh {fmt(dailyRate)} × {calc.days} days</span><span>KSh {fmt(calc.subtotal)}</span></div>
+          {calc.deliveryFee > 0 && (
+            <div className="flex justify-between text-muted-foreground"><span>Delivery & return</span><span>KSh {fmt(calc.deliveryFee)}</span></div>
+          )}
           <div className="flex justify-between text-muted-foreground text-xs"><span>Service fee (incl.)</span><span>KSh {fmt(calc.serviceFee)}</span></div>
           <div className="flex justify-between font-medium pt-2 border-t border-border/40"><span>Total</span><span className="text-primary">KSh {fmt(calc.total)}</span></div>
         </div>
       )}
 
-      <Button variant="hero" className="w-full" onClick={book} disabled={busy || !calc}>
+      <Button variant="hero" className="w-full" onClick={book} disabled={busy || !calc || !!deliveryError}>
         {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />} Request booking
       </Button>
       <p className="text-xs text-muted-foreground mt-2 text-center">You won't be charged until the host confirms.</p>
