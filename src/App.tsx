@@ -10,6 +10,7 @@ import Signup from "./pages/Signup.tsx";
 import Inventory from "./pages/Inventory.tsx";
 import Rentals from "./pages/Rentals.tsx";
 import VehicleDetail from "./pages/VehicleDetail.tsx";
+import TestDriveBooking from "./pages/TestDriveBooking.tsx";
 import Compare from "./pages/Compare.tsx";
 import Reviews from "./pages/Reviews.tsx";
 import FinanceCalculator from "./pages/FinanceCalculator.tsx";
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/rentals" element={<Rentals />} />
           <Route path="/vehicle/:id" element={<VehicleDetail />} />
+          <Route path="/test-drive/:id" element={<TestDriveBooking />} />
           <Route path="/compare" element={<Compare />} />
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/finance/calculator" element={<FinanceCalculator />} />

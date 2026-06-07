@@ -303,7 +303,7 @@ const VehicleDetail = () => {
                 )}
 
                 <div className="grid grid-cols-1 gap-2 mt-5">
-                  <Button variant="hero" onClick={() => openInquiry("test_drive")}><CarIcon className="w-4 h-4" /> Book test drive</Button>
+                  <Button variant="hero" onClick={() => navigate(`/test-drive/${vehicle.id}`)}><CarIcon className="w-4 h-4" /> Book test drive</Button>
                   <Button variant="outlineGold" onClick={() => openInquiry("info")}><MessageSquare className="w-4 h-4" /> Ask the dealer</Button>
                   <Button variant="outline" onClick={() => openInquiry("offer")}><Tag className="w-4 h-4" /> Make an offer</Button>
                 </div>
