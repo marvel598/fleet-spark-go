@@ -49,6 +49,55 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
   const [sameReturn, setSameReturn] = useState(true);
   const [dropoffLocation, setDropoffLocation] = useState("");
   const [dropoffKm, setDropoffKm] = useState<string>("");
+  const [pickupCalcing, setPickupCalcing] = useState(false);
+  const [dropoffCalcing, setDropoffCalcing] = useState(false);
+  const [distanceError, setDistanceError] = useState<string | null>(null);
+
+  // Auto-compute distance from baseLocation -> address whenever address changes (debounced)
+  useEffect(() => {
+    if (!cfg.delivery_available || !wantDelivery) return;
+    const addr = pickupLocation.trim();
+    if (!addr || !baseLocation) { setPickupKm(""); return; }
+    setPickupCalcing(true);
+    const t = setTimeout(async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("compute-distance", {
+          body: { origin: baseLocation, destination: addr },
+        });
+        if (error) throw error;
+        if (typeof data?.distanceKm === "number") {
+          setPickupKm(String(data.distanceKm));
+          setDistanceError(null);
+        } else setDistanceError("Could not calculate distance");
+      } catch (e: any) {
+        setDistanceError(e?.message || "Could not calculate distance");
+      } finally { setPickupCalcing(false); }
+    }, 700);
+    return () => clearTimeout(t);
+  }, [pickupLocation, baseLocation, cfg.delivery_available, wantDelivery]);
+
+  useEffect(() => {
+    if (!cfg.delivery_available || !wantDelivery || sameReturn) return;
+    const addr = dropoffLocation.trim();
+    if (!addr || !baseLocation) { setDropoffKm(""); return; }
+    setDropoffCalcing(true);
+    const t = setTimeout(async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke("compute-distance", {
+          body: { origin: baseLocation, destination: addr },
+        });
+        if (error) throw error;
+        if (typeof data?.distanceKm === "number") {
+          setDropoffKm(String(data.distanceKm));
+          setDistanceError(null);
+        } else setDistanceError("Could not calculate return distance");
+      } catch (e: any) {
+        setDistanceError(e?.message || "Could not calculate return distance");
+      } finally { setDropoffCalcing(false); }
+    }, 700);
+    return () => clearTimeout(t);
+  }, [dropoffLocation, baseLocation, cfg.delivery_available, wantDelivery, sameReturn]);
+
 
   const pickupKmNum = Math.max(0, Number(pickupKm) || 0);
   const dropoffKmNum = sameReturn ? pickupKmNum : Math.max(0, Number(dropoffKm) || 0);
