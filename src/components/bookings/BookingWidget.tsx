@@ -101,8 +101,13 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
 
   useEffect(() => {
     if (!cfg.delivery_available || !wantDelivery || sameReturn) return;
-    const addr = dropoffLocation.trim();
-    if (!addr || !baseLocation) { setDropoffKm(""); return; }
+    const raw = dropoffLocation;
+    if (!raw.trim()) { setDropoffKm(""); setDropoffAddressError(null); return; }
+    const err = validateAddress(raw);
+    setDropoffAddressError(err);
+    if (err) { setDropoffKm(""); return; }
+    if (!baseLocation) { setDropoffKm(""); return; }
+    const addr = raw.trim();
     setDropoffCalcing(true);
     const t = setTimeout(async () => {
       try {
