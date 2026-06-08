@@ -181,19 +181,31 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
                 Free within {cfg.free_delivery_radius_km} km · KSh {fmt(cfg.delivery_fee_base)} base + KSh {fmt(cfg.delivery_fee_per_km)} per extra km
                 {cfg.max_delivery_km > 0 ? ` · max ${cfg.max_delivery_km} km` : ""}
               </div>
-              <div className="grid grid-cols-[1fr,90px] gap-2">
+              <div className="grid grid-cols-[1fr,110px] gap-2">
                 <div><Label className="text-xs">Delivery address</Label><Input value={pickupLocation} onChange={(e) => setPickupLocation(e.target.value)} placeholder="Westlands, Nairobi" /></div>
-                <div><Label className="text-xs">Distance (km)</Label><Input inputMode="decimal" value={pickupKm} onChange={(e) => setPickupKm(e.target.value.replace(/[^\d.]/g, ""))} /></div>
+                <div>
+                  <Label className="text-xs">Distance</Label>
+                  <div className="h-10 rounded-md border border-input bg-muted/40 px-3 flex items-center text-sm">
+                    {pickupCalcing ? <Loader2 className="w-3 h-3 animate-spin" /> : pickupKm ? `${pickupKm} km` : "—"}
+                  </div>
+                </div>
               </div>
               <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
                 <input type="checkbox" checked={sameReturn} onChange={(e) => setSameReturn(e.target.checked)} /> Return to the same place
               </label>
               {!sameReturn && (
-                <div className="grid grid-cols-[1fr,90px] gap-2">
+                <div className="grid grid-cols-[1fr,110px] gap-2">
                   <div><Label className="text-xs">Return address</Label><Input value={dropoffLocation} onChange={(e) => setDropoffLocation(e.target.value)} placeholder="JKIA, Nairobi" /></div>
-                  <div><Label className="text-xs">Distance (km)</Label><Input inputMode="decimal" value={dropoffKm} onChange={(e) => setDropoffKm(e.target.value.replace(/[^\d.]/g, ""))} /></div>
+                  <div>
+                    <Label className="text-xs">Distance</Label>
+                    <div className="h-10 rounded-md border border-input bg-muted/40 px-3 flex items-center text-sm">
+                      {dropoffCalcing ? <Loader2 className="w-3 h-3 animate-spin" /> : dropoffKm ? `${dropoffKm} km` : "—"}
+                    </div>
+                  </div>
                 </div>
               )}
+              {!baseLocation && <p className="text-xs text-muted-foreground">Host hasn't set a base location, distance can't be auto-calculated.</p>}
+              {distanceError && <p className="text-xs text-destructive">{distanceError}</p>}
               {deliveryError && <p className="text-xs text-destructive">{deliveryError}</p>}
             </>
           )}
