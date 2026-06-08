@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,21 @@ import { calculatePrice, calculateLegFee, daysBetween, type DeliveryConfig } fro
 
 const fmt = (n: number) => new Intl.NumberFormat("en-KE", { maximumFractionDigits: 0 }).format(n);
 const today = () => new Date().toISOString().slice(0, 10);
+
+// Address: 5–200 chars, must contain a letter, allowed punctuation, no URLs/HTML
+const addressSchema = z
+  .string()
+  .trim()
+  .min(5, { message: "Address must be at least 5 characters" })
+  .max(200, { message: "Address must be less than 200 characters" })
+  .regex(/[A-Za-z]/, { message: "Address must contain letters" })
+  .regex(/^[A-Za-z0-9\s,.\-'/#&()]+$/, { message: "Address contains invalid characters" })
+  .refine((v) => !/https?:\/\//i.test(v) && !/[<>]/.test(v), { message: "Address cannot contain links or HTML" });
+
+const validateAddress = (v: string): string | null => {
+  const r = addressSchema.safeParse(v);
+  return r.success ? null : r.error.issues[0]?.message ?? "Invalid address";
+};
 
 interface Props {
   vehicleId: string;
@@ -52,12 +68,19 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
   const [pickupCalcing, setPickupCalcing] = useState(false);
   const [dropoffCalcing, setDropoffCalcing] = useState(false);
   const [distanceError, setDistanceError] = useState<string | null>(null);
+  const [pickupAddressError, setPickupAddressError] = useState<string | null>(null);
+  const [dropoffAddressError, setDropoffAddressError] = useState<string | null>(null);
 
   // Auto-compute distance from baseLocation -> address whenever address changes (debounced)
   useEffect(() => {
     if (!cfg.delivery_available || !wantDelivery) return;
-    const addr = pickupLocation.trim();
-    if (!addr || !baseLocation) { setPickupKm(""); return; }
+    const raw = pickupLocation;
+    if (!raw.trim()) { setPickupKm(""); setPickupAddressError(null); setDistanceError(null); return; }
+    const err = validateAddress(raw);
+    setPickupAddressError(err);
+    if (err) { setPickupKm(""); return; }
+    if (!baseLocation) { setPickupKm(""); return; }
+    const addr = raw.trim();
     setPickupCalcing(true);
     const t = setTimeout(async () => {
       try {
@@ -78,8 +101,13 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
 
   useEffect(() => {
     if (!cfg.delivery_available || !wantDelivery || sameReturn) return;
-    const addr = dropoffLocation.trim();
-    if (!addr || !baseLocation) { setDropoffKm(""); return; }
+    const raw = dropoffLocation;
+    if (!raw.trim()) { setDropoffKm(""); setDropoffAddressError(null); return; }
+    const err = validateAddress(raw);
+    setDropoffAddressError(err);
+    if (err) { setDropoffKm(""); return; }
+    if (!baseLocation) { setDropoffKm(""); return; }
+    const addr = raw.trim();
     setDropoffCalcing(true);
     const t = setTimeout(async () => {
       try {
@@ -124,9 +152,17 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
     if (calc.days < minDays) { toast.error(`Minimum ${minDays} day(s)`); return; }
     if (calc.days > maxDays) { toast.error(`Maximum ${maxDays} day(s)`); return; }
     if (deliveryError) { toast.error(deliveryError); return; }
-    if (wantDelivery && cfg.delivery_available && !pickupLocation.trim()) {
-      toast.error("Enter a delivery address");
-      return;
+    if (wantDelivery && cfg.delivery_available) {
+      const pErr = validateAddress(pickupLocation);
+      if (pErr) { setPickupAddressError(pErr); toast.error(`Delivery address: ${pErr}`); return; }
+      if (!sameReturn) {
+        const dErr = validateAddress(dropoffLocation);
+        if (dErr) { setDropoffAddressError(dErr); toast.error(`Return address: ${dErr}`); return; }
+      }
+      if (!pickupKm || (!sameReturn && !dropoffKm)) {
+        toast.error("Waiting for distance calculation");
+        return;
+      }
     }
     setBusy(true);
     const finalDropoffLocation = sameReturn ? pickupLocation : dropoffLocation;
@@ -182,7 +218,18 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
                 {cfg.max_delivery_km > 0 ? ` · max ${cfg.max_delivery_km} km` : ""}
               </div>
               <div className="grid grid-cols-[1fr,110px] gap-2">
-                <div><Label className="text-xs">Delivery address</Label><Input value={pickupLocation} onChange={(e) => setPickupLocation(e.target.value)} placeholder="Westlands, Nairobi" /></div>
+                <div>
+                  <Label className="text-xs">Delivery address</Label>
+                  <Input
+                    value={pickupLocation}
+                    onChange={(e) => setPickupLocation(e.target.value)}
+                    onBlur={() => setPickupAddressError(pickupLocation.trim() ? validateAddress(pickupLocation) : null)}
+                    placeholder="Westlands, Nairobi"
+                    maxLength={200}
+                    aria-invalid={!!pickupAddressError}
+                    aria-describedby="pickup-address-error"
+                  />
+                </div>
                 <div>
                   <Label className="text-xs">Distance</Label>
                   <div className="h-10 rounded-md border border-input bg-muted/40 px-3 flex items-center text-sm">
@@ -190,12 +237,25 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
                   </div>
                 </div>
               </div>
+              {pickupAddressError && <p id="pickup-address-error" className="text-xs text-destructive">{pickupAddressError}</p>}
               <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-                <input type="checkbox" checked={sameReturn} onChange={(e) => setSameReturn(e.target.checked)} /> Return to the same place
+                <input type="checkbox" checked={sameReturn} onChange={(e) => { setSameReturn(e.target.checked); if (e.target.checked) setDropoffAddressError(null); }} /> Return to the same place
               </label>
               {!sameReturn && (
+                <>
                 <div className="grid grid-cols-[1fr,110px] gap-2">
-                  <div><Label className="text-xs">Return address</Label><Input value={dropoffLocation} onChange={(e) => setDropoffLocation(e.target.value)} placeholder="JKIA, Nairobi" /></div>
+                  <div>
+                    <Label className="text-xs">Return address</Label>
+                    <Input
+                      value={dropoffLocation}
+                      onChange={(e) => setDropoffLocation(e.target.value)}
+                      onBlur={() => setDropoffAddressError(dropoffLocation.trim() ? validateAddress(dropoffLocation) : null)}
+                      placeholder="JKIA, Nairobi"
+                      maxLength={200}
+                      aria-invalid={!!dropoffAddressError}
+                      aria-describedby="dropoff-address-error"
+                    />
+                  </div>
                   <div>
                     <Label className="text-xs">Distance</Label>
                     <div className="h-10 rounded-md border border-input bg-muted/40 px-3 flex items-center text-sm">
@@ -203,6 +263,8 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
                     </div>
                   </div>
                 </div>
+                {dropoffAddressError && <p id="dropoff-address-error" className="text-xs text-destructive">{dropoffAddressError}</p>}
+                </>
               )}
               {!baseLocation && <p className="text-xs text-muted-foreground">Host hasn't set a base location, distance can't be auto-calculated.</p>}
               {distanceError && <p className="text-xs text-destructive">{distanceError}</p>}
