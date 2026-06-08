@@ -68,12 +68,19 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
   const [pickupCalcing, setPickupCalcing] = useState(false);
   const [dropoffCalcing, setDropoffCalcing] = useState(false);
   const [distanceError, setDistanceError] = useState<string | null>(null);
+  const [pickupAddressError, setPickupAddressError] = useState<string | null>(null);
+  const [dropoffAddressError, setDropoffAddressError] = useState<string | null>(null);
 
   // Auto-compute distance from baseLocation -> address whenever address changes (debounced)
   useEffect(() => {
     if (!cfg.delivery_available || !wantDelivery) return;
-    const addr = pickupLocation.trim();
-    if (!addr || !baseLocation) { setPickupKm(""); return; }
+    const raw = pickupLocation;
+    if (!raw.trim()) { setPickupKm(""); setPickupAddressError(null); setDistanceError(null); return; }
+    const err = validateAddress(raw);
+    setPickupAddressError(err);
+    if (err) { setPickupKm(""); return; }
+    if (!baseLocation) { setPickupKm(""); return; }
+    const addr = raw.trim();
     setPickupCalcing(true);
     const t = setTimeout(async () => {
       try {
