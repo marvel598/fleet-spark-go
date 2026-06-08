@@ -1,8 +1,23 @@
 import { corsHeaders } from 'npm:@supabase/supabase-js@2/cors';
+import { z } from 'npm:zod@3.23.8';
 
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/google_maps';
 
-interface Body { origin?: string; destination?: string }
+const addressSchema = z
+  .string()
+  .trim()
+  .min(5, { message: 'Address must be at least 5 characters' })
+  .max(200, { message: 'Address must be less than 200 characters' })
+  .regex(/[A-Za-z]/, { message: 'Address must contain letters' })
+  .regex(/^[A-Za-z0-9\s,.\-'/#&()]+$/, { message: 'Address contains invalid characters' })
+  .refine((v) => !/https?:\/\//i.test(v) && !/[<>]/.test(v), {
+    message: 'Address cannot contain links or HTML',
+  });
+
+const BodySchema = z.object({
+  origin: addressSchema,
+  destination: addressSchema,
+});
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
@@ -15,13 +30,15 @@ Deno.serve(async (req) => {
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    const body = (await req.json().catch(() => ({}))) as Body;
-    const origin = (body.origin ?? '').toString().trim();
-    const destination = (body.destination ?? '').toString().trim();
-    if (!origin || !destination || origin.length > 300 || destination.length > 300) {
-      return new Response(JSON.stringify({ error: 'origin and destination are required (max 300 chars)' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    const raw = await req.json().catch(() => ({}));
+    const parsed = BodySchema.safeParse(raw);
+    if (!parsed.success) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid address', fieldErrors: parsed.error.flatten().fieldErrors }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+      );
     }
+    const { origin, destination } = parsed.data;
 
     const res = await fetch(`${GATEWAY_URL}/routes/directions/v2:computeRoutes`, {
       method: 'POST',
