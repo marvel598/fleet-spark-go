@@ -263,6 +263,8 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
                     </div>
                   </div>
                 </div>
+                {dropoffAddressError && <p id="dropoff-address-error" className="text-xs text-destructive">{dropoffAddressError}</p>}
+                </>
               )}
               {!baseLocation && <p className="text-xs text-muted-foreground">Host hasn't set a base location, distance can't be auto-calculated.</p>}
               {distanceError && <p className="text-xs text-destructive">{distanceError}</p>}
