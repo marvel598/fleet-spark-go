@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { z } from "zod";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,21 @@ import { calculatePrice, calculateLegFee, daysBetween, type DeliveryConfig } fro
 
 const fmt = (n: number) => new Intl.NumberFormat("en-KE", { maximumFractionDigits: 0 }).format(n);
 const today = () => new Date().toISOString().slice(0, 10);
+
+// Address: 5–200 chars, must contain a letter, allowed punctuation, no URLs/HTML
+const addressSchema = z
+  .string()
+  .trim()
+  .min(5, { message: "Address must be at least 5 characters" })
+  .max(200, { message: "Address must be less than 200 characters" })
+  .regex(/[A-Za-z]/, { message: "Address must contain letters" })
+  .regex(/^[A-Za-z0-9\s,.\-'/#&()]+$/, { message: "Address contains invalid characters" })
+  .refine((v) => !/https?:\/\//i.test(v) && !/[<>]/.test(v), { message: "Address cannot contain links or HTML" });
+
+const validateAddress = (v: string): string | null => {
+  const r = addressSchema.safeParse(v);
+  return r.success ? null : r.error.issues[0]?.message ?? "Invalid address";
+};
 
 interface Props {
   vehicleId: string;
