@@ -218,7 +218,18 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
                 {cfg.max_delivery_km > 0 ? ` · max ${cfg.max_delivery_km} km` : ""}
               </div>
               <div className="grid grid-cols-[1fr,110px] gap-2">
-                <div><Label className="text-xs">Delivery address</Label><Input value={pickupLocation} onChange={(e) => setPickupLocation(e.target.value)} placeholder="Westlands, Nairobi" /></div>
+                <div>
+                  <Label className="text-xs">Delivery address</Label>
+                  <Input
+                    value={pickupLocation}
+                    onChange={(e) => setPickupLocation(e.target.value)}
+                    onBlur={() => setPickupAddressError(pickupLocation.trim() ? validateAddress(pickupLocation) : null)}
+                    placeholder="Westlands, Nairobi"
+                    maxLength={200}
+                    aria-invalid={!!pickupAddressError}
+                    aria-describedby="pickup-address-error"
+                  />
+                </div>
                 <div>
                   <Label className="text-xs">Distance</Label>
                   <div className="h-10 rounded-md border border-input bg-muted/40 px-3 flex items-center text-sm">
@@ -226,12 +237,25 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
                   </div>
                 </div>
               </div>
+              {pickupAddressError && <p id="pickup-address-error" className="text-xs text-destructive">{pickupAddressError}</p>}
               <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
-                <input type="checkbox" checked={sameReturn} onChange={(e) => setSameReturn(e.target.checked)} /> Return to the same place
+                <input type="checkbox" checked={sameReturn} onChange={(e) => { setSameReturn(e.target.checked); if (e.target.checked) setDropoffAddressError(null); }} /> Return to the same place
               </label>
               {!sameReturn && (
+                <>
                 <div className="grid grid-cols-[1fr,110px] gap-2">
-                  <div><Label className="text-xs">Return address</Label><Input value={dropoffLocation} onChange={(e) => setDropoffLocation(e.target.value)} placeholder="JKIA, Nairobi" /></div>
+                  <div>
+                    <Label className="text-xs">Return address</Label>
+                    <Input
+                      value={dropoffLocation}
+                      onChange={(e) => setDropoffLocation(e.target.value)}
+                      onBlur={() => setDropoffAddressError(dropoffLocation.trim() ? validateAddress(dropoffLocation) : null)}
+                      placeholder="JKIA, Nairobi"
+                      maxLength={200}
+                      aria-invalid={!!dropoffAddressError}
+                      aria-describedby="dropoff-address-error"
+                    />
+                  </div>
                   <div>
                     <Label className="text-xs">Distance</Label>
                     <div className="h-10 rounded-md border border-input bg-muted/40 px-3 flex items-center text-sm">
