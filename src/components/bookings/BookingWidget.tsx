@@ -152,9 +152,17 @@ export function BookingWidget({ vehicleId, dailyRate, minDays, maxDays, baseLoca
     if (calc.days < minDays) { toast.error(`Minimum ${minDays} day(s)`); return; }
     if (calc.days > maxDays) { toast.error(`Maximum ${maxDays} day(s)`); return; }
     if (deliveryError) { toast.error(deliveryError); return; }
-    if (wantDelivery && cfg.delivery_available && !pickupLocation.trim()) {
-      toast.error("Enter a delivery address");
-      return;
+    if (wantDelivery && cfg.delivery_available) {
+      const pErr = validateAddress(pickupLocation);
+      if (pErr) { setPickupAddressError(pErr); toast.error(`Delivery address: ${pErr}`); return; }
+      if (!sameReturn) {
+        const dErr = validateAddress(dropoffLocation);
+        if (dErr) { setDropoffAddressError(dErr); toast.error(`Return address: ${dErr}`); return; }
+      }
+      if (!pickupKm || (!sameReturn && !dropoffKm)) {
+        toast.error("Waiting for distance calculation");
+        return;
+      }
     }
     setBusy(true);
     const finalDropoffLocation = sameReturn ? pickupLocation : dropoffLocation;
