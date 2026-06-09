@@ -93,27 +93,28 @@ const VehicleDetail = () => {
         .maybeSingle();
       if (!v) { setLoading(false); return; }
       setVehicle(v as unknown as Vehicle);
-      setDown(Math.round(Number((v as unknown as Vehicle).price) * 0.2));
+      const vh = v as unknown as Vehicle;
+      setDown(Math.round(Number(vh.price) * 0.2));
 
-      if (v.dealer_id) {
+      if (vh.dealer_id) {
         // Dealer phone/email are restricted to signed-in users.
-        const dealerCols = user
+        const dealerCols = (user
           ? "id,name,phone,email,address,city,website,about"
-          : "id,name,address,city,website,about";
+          : "id,name,address,city,website,about") as unknown as "*";
         const { data: d } = await supabase
           .from("dealers")
           .select(dealerCols)
-          .eq("id", v.dealer_id)
+          .eq("id", vh.dealer_id)
           .maybeSingle();
-        setDealer(d as Dealer);
+        setDealer(d as unknown as Dealer);
       }
 
       const { data: sim } = await supabase
         .from("vehicles")
         .select("id,make,model,year,trim,price,mileage,photos,fuel_type,transmission,body_type,condition,location,status")
         .eq("status", "available")
-        .eq("make", v.make)
-        .neq("id", v.id)
+        .eq("make", vh.make)
+        .neq("id", vh.id)
         .limit(3);
       setSimilar((sim as VehicleSummary[]) ?? []);
       setLoading(false);
