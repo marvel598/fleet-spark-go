@@ -83,30 +83,38 @@ const VehicleDetail = () => {
     if (!id) return;
     (async () => {
       setLoading(true);
+      // Public-safe columns only. vin & stock_number are restricted to signed-in users.
+      const publicCols = "id,dealer_id,owner_id,make,model,year,trim,price,msrp,mileage,body_type,condition,fuel_type,transmission,drivetrain,engine,exterior_color,interior_color,photos,features,description,location,status,listing_type,daily_rate,min_rental_days,max_rental_days,delivery_available,delivery_fee_base,delivery_fee_per_km,free_delivery_radius_km,max_delivery_km";
+      const cols = (user ? `${publicCols},vin,stock_number` : publicCols) as unknown as "*";
       const { data: v } = await supabase
         .from("vehicles")
-        .select("*")
+        .select(cols)
         .eq("id", id)
         .maybeSingle();
       if (!v) { setLoading(false); return; }
-      setVehicle(v as Vehicle);
-      setDown(Math.round(Number(v.price) * 0.2));
+      setVehicle(v as unknown as Vehicle);
+      const vh = v as unknown as Vehicle;
+      setDown(Math.round(Number(vh.price) * 0.2));
 
-      if (v.dealer_id) {
+      if (vh.dealer_id) {
+        // Dealer phone/email are restricted to signed-in users.
+        const dealerCols = (user
+          ? "id,name,phone,email,address,city,website,about"
+          : "id,name,address,city,website,about") as unknown as "*";
         const { data: d } = await supabase
           .from("dealers")
-          .select("id,name,phone,email,address,city,website,about")
-          .eq("id", v.dealer_id)
+          .select(dealerCols)
+          .eq("id", vh.dealer_id)
           .maybeSingle();
-        setDealer(d as Dealer);
+        setDealer(d as unknown as Dealer);
       }
 
       const { data: sim } = await supabase
         .from("vehicles")
         .select("id,make,model,year,trim,price,mileage,photos,fuel_type,transmission,body_type,condition,location,status")
         .eq("status", "available")
-        .eq("make", v.make)
-        .neq("id", v.id)
+        .eq("make", vh.make)
+        .neq("id", vh.id)
         .limit(3);
       setSimilar((sim as VehicleSummary[]) ?? []);
       setLoading(false);
