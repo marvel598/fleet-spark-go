@@ -85,15 +85,15 @@ const VehicleDetail = () => {
       setLoading(true);
       // Public-safe columns only. vin & stock_number are restricted to signed-in users.
       const publicCols = "id,dealer_id,owner_id,make,model,year,trim,price,msrp,mileage,body_type,condition,fuel_type,transmission,drivetrain,engine,exterior_color,interior_color,photos,features,description,location,status,listing_type,daily_rate,min_rental_days,max_rental_days,delivery_available,delivery_fee_base,delivery_fee_per_km,free_delivery_radius_km,max_delivery_km";
-      const cols = user ? `${publicCols},vin,stock_number` : publicCols;
+      const cols = (user ? `${publicCols},vin,stock_number` : publicCols) as unknown as "*";
       const { data: v } = await supabase
         .from("vehicles")
         .select(cols)
         .eq("id", id)
         .maybeSingle();
       if (!v) { setLoading(false); return; }
-      setVehicle(v as Vehicle);
-      setDown(Math.round(Number(v.price) * 0.2));
+      setVehicle(v as unknown as Vehicle);
+      setDown(Math.round(Number((v as unknown as Vehicle).price) * 0.2));
 
       if (v.dealer_id) {
         // Dealer phone/email are restricted to signed-in users.
