@@ -24,6 +24,9 @@ const ALLOW_LIST = new Set<string>([
   "src/integrations/supabase/client.ts", // never reads, kept for safety
   "src/integrations/supabase/types.ts",  // generated types
   "src/test/no-direct-trip-reviews.test.ts", // this guardrail
+  // Renter posts their OWN review after a completed trip; RLS scopes the
+  // insert to renter_id = auth.uid(). This is a write, never a public read.
+  "src/pages/Trips.tsx",
 ]);
 
 // Matches: .from("trip_reviews") or .from('trip_reviews') or .from(`trip_reviews`)
