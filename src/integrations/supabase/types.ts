@@ -26,6 +26,9 @@ export type Database = {
           id: string
           notes: string | null
           owner_payout: number
+          paid_at: string | null
+          payment_method: string | null
+          payment_reference: string | null
           pickup_location: string | null
           renter_id: string
           return_distance_km: number
@@ -48,6 +51,9 @@ export type Database = {
           id?: string
           notes?: string | null
           owner_payout: number
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
           pickup_location?: string | null
           renter_id: string
           return_distance_km?: number
@@ -70,6 +76,9 @@ export type Database = {
           id?: string
           notes?: string | null
           owner_payout?: number
+          paid_at?: string | null
+          payment_method?: string | null
+          payment_reference?: string | null
           pickup_location?: string | null
           renter_id?: string
           return_distance_km?: number
