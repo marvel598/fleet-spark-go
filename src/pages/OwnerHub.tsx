@@ -39,6 +39,13 @@ const OwnerHub = () => {
 
   useEffect(() => { if (user) load(); }, [user]);
 
+  const markPaid = async (id: string) => {
+    const { error } = await supabase.from("bookings").update({ paid_at: new Date().toISOString() }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Payment confirmed");
+    load();
+  };
+
   const setStatus = async (id: string, status: string) => {
     const { error } = await supabase.from("bookings").update({ status: status as any }).eq("id", id);
     if (error) { toast.error(error.message); return; }
