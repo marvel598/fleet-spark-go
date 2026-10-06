@@ -13,7 +13,7 @@ import { useAuth } from "@/hooks/useAuth";
 const fmt = (n: number) => new Intl.NumberFormat("en-KE", { maximumFractionDigits: 0 }).format(n);
 
 interface MyVehicle { id: string; make: string; model: string; year: number; daily_rate: number | null; status: string; listing_type: string; }
-interface Booking { id: string; start_date: string; end_date: string; days: number; total: number; status: string; vehicle_id: string; renter_id: string; }
+interface Booking { id: string; start_date: string; end_date: string; days: number; total: number; status: string; vehicle_id: string; renter_id: string; payment_reference: string | null; paid_at: string | null; }
 
 const OwnerHub = () => {
   const { user, hasRole, loading: authLoading } = useAuth();
@@ -30,7 +30,7 @@ const OwnerHub = () => {
     if (!user) return;
     const [{ data: v }, { data: b }] = await Promise.all([
       supabase.from("vehicles").select("id,make,model,year,daily_rate,status,listing_type").eq("owner_id", user.id).order("created_at", { ascending: false }),
-      supabase.from("bookings").select("id,start_date,end_date,days,total,status,vehicle_id,renter_id, vehicles!inner(owner_id)").eq("vehicles.owner_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("bookings").select("id,start_date,end_date,days,total,status,vehicle_id,renter_id,payment_reference,paid_at, vehicles!inner(owner_id)").eq("vehicles.owner_id", user.id).order("created_at", { ascending: false }),
     ]);
     setVehicles((v as MyVehicle[]) ?? []);
     setBookings((b as any) ?? []);
@@ -107,9 +107,14 @@ const OwnerHub = () => {
                   <div className="flex-1 min-w-[200px]">
                     <Link to={`/vehicle/${b.vehicle_id}`} className="text-sm hover:text-primary">Booking {b.id.slice(0, 8)}</Link>
                     <div className="text-xs text-muted-foreground">{b.start_date} → {b.end_date} · {b.days} days</div>
+                    {b.payment_reference && <div className="text-xs text-muted-foreground">Payment ref: <span className="text-foreground/80">{b.payment_reference}</span></div>}
                   </div>
                   <div className="text-sm">KSh {fmt(Number(b.total))}</div>
                   <Badge variant="outline" className="capitalize">{b.status}</Badge>
+                  {b.paid_at && <Badge variant="outline" className="border-primary/40 text-primary">Paid</Badge>}
+                  {!b.paid_at && b.payment_reference && (b.status === "pending" || b.status === "confirmed") && (
+                    <Button size="sm" variant="outline" onClick={() => markPaid(b.id)}>Mark paid</Button>
+                  )}
                   {b.status === "pending" && (<>
                     <Button size="sm" variant="hero" onClick={() => setStatus(b.id, "confirmed")}>Confirm</Button>
                     <Button size="sm" variant="ghost" onClick={() => setStatus(b.id, "cancelled")}>Decline</Button>
