@@ -764,7 +764,14 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "renter" | "owner" | "driver" | "admin" | "customer" | "dealer"
+      app_role:
+        | "renter"
+        | "owner"
+        | "driver"
+        | "admin"
+        | "customer"
+        | "dealer"
+        | "lender"
       body_type:
         | "sedan"
         | "suv"
@@ -924,7 +931,15 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["renter", "owner", "driver", "admin", "customer", "dealer"],
+      app_role: [
+        "renter",
+        "owner",
+        "driver",
+        "admin",
+        "customer",
+        "dealer",
+        "lender",
+      ],
       body_type: [
         "sedan",
         "suv",

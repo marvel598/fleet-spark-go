@@ -8,6 +8,13 @@
       "when": 1791276753024,
       "tag": "0000_booking_payment_details",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791382683998,
+      "tag": "0001_add_lender_role",
+      "breakpoints": true
     }
   ]
 }
