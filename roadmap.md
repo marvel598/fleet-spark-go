@@ -8,4 +8,5 @@
 - [ ] Driver hire: /driver page, add-driver in booking, owner assigns
 - [ ] Messaging: /messages + header unread
 - [ ] Signup lender/driver choices, header links
+- [ ] AI car recommender for renters (dates, pickup, passengers, preferences → AI picks from available listings)
 - [ ] Security scan + verification
