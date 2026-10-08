@@ -25,5 +25,27 @@ export function calcMonthlyPayment(
   };
 }
 
+/**
+ * Calculate buying transaction with 10% commission
+ */
+export function calcBuyingCommission(
+  price: number,
+): { commission: number; netToDealer: number } {
+  const commission = Math.round(price * 0.1); // 10% to platform
+  const netToDealer = price - commission;
+  return { commission, netToDealer };
+}
+
+/**
+ * Calculate leasing transaction with 30% commission
+ */
+export function calcLeasingCommission(
+  totalLeaseRevenue: number,
+): { commission: number; netToOwner: number } {
+  const commission = Math.round(totalLeaseRevenue * 0.3); // 30% to platform
+  const netToOwner = totalLeaseRevenue - commission;
+  return { commission, netToOwner };
+}
+
 export const formatKES = (n: number) =>
   `KSh ${new Intl.NumberFormat("en-KE", { maximumFractionDigits: 0 }).format(n)}`;
