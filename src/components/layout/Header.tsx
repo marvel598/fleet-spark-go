@@ -16,6 +16,7 @@ const navItems = [
   { to: "/owner", label: "Owner Hub", requireRole: "owner" as const },
   { to: "/lender", label: "Lender Hub", requireRole: "lender" as const },
   { to: "/trips", label: "My Trips", requireAuth: true },
+  { to: "/payouts", label: "Payouts", requireAuth: true },
   { to: "/account", label: "Account", requireAuth: true },
 ];
 
