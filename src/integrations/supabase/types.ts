@@ -342,6 +342,47 @@ export type Database = {
           },
         ]
       }
+      lender_decisions: {
+        Row: {
+          application_id: string
+          created_at: string
+          decision: string
+          id: string
+          lender_id: string
+          note: string | null
+          offered_apr: number | null
+          offered_term_months: number | null
+        }
+        Insert: {
+          application_id: string
+          created_at?: string
+          decision: string
+          id?: string
+          lender_id: string
+          note?: string | null
+          offered_apr?: number | null
+          offered_term_months?: number | null
+        }
+        Update: {
+          application_id?: string
+          created_at?: string
+          decision?: string
+          id?: string
+          lender_id?: string
+          note?: string | null
+          offered_apr?: number | null
+          offered_term_months?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lender_decisions_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "finance_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notifications: {
         Row: {
           body: string | null
@@ -372,6 +413,57 @@ export type Database = {
           title?: string
           type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      payout_accounts: {
+        Row: {
+          account_name: string | null
+          mpesa_phone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_name?: string | null
+          mpesa_phone: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_name?: string | null
+          mpesa_phone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payouts: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          id: string
+          mpesa_reference: string | null
+          note: string | null
+          owner_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          mpesa_reference?: string | null
+          note?: string | null
+          owner_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          mpesa_reference?: string | null
+          note?: string | null
+          owner_id?: string
         }
         Relationships: []
       }
