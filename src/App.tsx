@@ -15,6 +15,7 @@ import Compare from "./pages/Compare.tsx";
 import Reviews from "./pages/Reviews.tsx";
 import FinanceCalculator from "./pages/FinanceCalculator.tsx";
 import Account from "./pages/Account.tsx";
+import Payouts from "./pages/Payouts.tsx";
 import Trips from "./pages/Trips.tsx";
 import DealerHub from "./pages/DealerHub.tsx";
 import DealerVehicleEdit from "./pages/DealerVehicleEdit.tsx";
@@ -43,6 +44,7 @@ const App = () => (
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/finance/calculator" element={<FinanceCalculator />} />
           <Route path="/account" element={<Account />} />
+          <Route path="/payouts" element={<Payouts />} />
           <Route path="/trips" element={<Trips />} />
           <Route path="/dealer" element={<DealerHub />} />
           <Route path="/dealer/vehicles/:id" element={<DealerVehicleEdit />} />
