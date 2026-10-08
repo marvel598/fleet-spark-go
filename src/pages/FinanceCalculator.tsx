@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Calculator } from "lucide-react";
-import { calcMonthlyPayment, formatKES } from "@/lib/finance";
+import { calcMonthlyPayment, calcBuyingCommission, formatKES } from "@/lib/finance";
 
 const FinanceCalculator = () => {
   const [price, setPrice] = useState(2500000);
@@ -16,6 +16,7 @@ const FinanceCalculator = () => {
   const [term, setTerm] = useState(48);
 
   const result = useMemo(() => calcMonthlyPayment(price, down, tradeIn, apr, term), [price, down, tradeIn, apr, term]);
+  const commission = useMemo(() => calcBuyingCommission(price), [price]);
 
   const Row = ({ label, value }: { label: string; value: string }) => (
     <div className="flex items-center justify-between py-3 border-b border-border/40 last:border-0">
@@ -62,16 +63,25 @@ const FinanceCalculator = () => {
             </div>
           </Card>
 
-          <Card className="p-6 bg-gradient-gold-soft border-primary/30 h-fit sticky top-20">
-            <div className="text-xs uppercase tracking-widest text-primary mb-2">Estimated monthly</div>
-            <div className="font-serif text-5xl text-primary mb-4">{formatKES(result.monthly)}</div>
-            <Row label="Loan amount" value={formatKES(result.principal)} />
-            <Row label="Total interest" value={formatKES(result.totalInterest)} />
-            <Row label="Total cost of loan" value={formatKES(result.totalCost)} />
-            <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
-              Estimates only. Actual rates and terms depend on lender approval, credit history and the specific vehicle.
-            </p>
-          </Card>
+          <div className="space-y-4">
+            <Card className="p-6 bg-gradient-gold-soft border-primary/30 h-fit">
+              <div className="text-xs uppercase tracking-widest text-primary mb-2">Estimated monthly</div>
+              <div className="font-serif text-5xl text-primary mb-4">{formatKES(result.monthly)}</div>
+              <Row label="Loan amount" value={formatKES(result.principal)} />
+              <Row label="Total interest" value={formatKES(result.totalInterest)} />
+              <Row label="Total cost of loan" value={formatKES(result.totalCost)} />
+              <p className="text-xs text-muted-foreground mt-4 leading-relaxed">
+                Estimates only. Actual rates and terms depend on lender approval, credit history and the specific vehicle.
+              </p>
+            </Card>
+
+            <Card className="p-6 bg-emerald-500/10 border-emerald-500/30">
+              <div className="text-xs uppercase tracking-widest text-emerald-600 font-semibold mb-2">Platform Commission (Buying)</div>
+              <div className="text-sm text-emerald-700 mb-3">10% of vehicle price</div>
+              <Row label="Commission (10%)" value={formatKES(commission.commission)} />
+              <Row label="Net to dealer" value={formatKES(commission.netToDealer)} />
+            </Card>
+          </div>
         </div>
       </div>
     </Layout>
