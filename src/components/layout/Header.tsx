@@ -39,7 +39,7 @@ export function Header() {
             <Car className="w-5 h-5 text-primary-foreground" strokeWidth={2.5} />
           </div>
           <span className="font-serif text-2xl font-semibold tracking-tight">
-            Aurum<span className="text-primary">Motors</span>
+            My Ride <span className="text-primary">Dtk</span>
           </span>
         </Link>
 

@@ -48,12 +48,11 @@ const Index = () => {
   return (
     <Layout>
       <Seo
-        title="AurumMotors — Buy or rent your next car in Kenya"
+        title="My Ride Dtk — Buy or rent your next car in Kenya"
         description="Shop new, used and certified vehicles, or rent a car by the day from trusted dealers and owners across Kenya."
         path="/"
       />
 
-      {/* HERO + SEARCH */}
       <section className="relative min-h-[88vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroCar} alt="Premium vehicle on the showroom floor" width={1920} height={1080} fetchPriority="high" className="w-full h-full object-cover opacity-60" />
@@ -78,14 +77,14 @@ const Index = () => {
               <button
                 type="button"
                 onClick={() => setMode("buy")}
-                className={`px-5 py-2 rounded-full text-sm transition-smooth border ${mode === "buy" ? "bg-primary text-primary-foreground border-primary" : "border-border/60 text-muted-foreground hover:text-primary"}`}
+                className={`px-5 py-2 rounded-full text-sm transition-smooth border ${mode === "buy" ? "bg-primary text-primary-foreground border-primary" : "border-border/60 text-muted-foreground bg-background/50"}`}
               >
                 <ShoppingBag className="w-3.5 h-3.5 inline mr-1.5" /> Buy
               </button>
               <button
                 type="button"
                 onClick={() => setMode("rent")}
-                className={`px-5 py-2 rounded-full text-sm transition-smooth border ${mode === "rent" ? "bg-primary text-primary-foreground border-primary" : "border-border/60 text-muted-foreground hover:text-primary"}`}
+                className={`px-5 py-2 rounded-full text-sm transition-smooth border ${mode === "rent" ? "bg-primary text-primary-foreground border-primary" : "border-border/60 text-muted-foreground bg-background/50"}`}
               >
                 <KeyRound className="w-3.5 h-3.5 inline mr-1.5" /> Rent
               </button>
@@ -106,7 +105,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* BROWSE BY BODY TYPE */}
       <section className="container py-20">
         <div className="flex items-end justify-between mb-10">
           <div>
@@ -127,7 +125,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* FOR SALE */}
       <section className="container py-16 border-t border-border/40">
         <div className="flex items-end justify-between mb-10">
           <div>
@@ -143,7 +140,6 @@ const Index = () => {
         )}
       </section>
 
-      {/* FOR RENT */}
       <section className="container py-16 border-t border-border/40">
         <div className="flex items-end justify-between mb-10">
           <div>
@@ -153,16 +149,15 @@ const Index = () => {
           <Button asChild variant="outlineGold"><Link to="/rentals">Browse rentals <ChevronRight className="w-4 h-4" /></Link></Button>
         </div>
         {forRent.length === 0 ? (
-          <Card className="p-12 text-center bg-card/40 border-border/60"><p className="text-muted-foreground">No rental cars listed yet. <Link to="/signup" className="text-primary hover:underline">Become a host →</Link></p></Card>
+          <Card className="p-12 text-center bg-card/40 border-border/60"><p className="text-muted-foreground">No rental cars listed yet. <Link to="/signup" className="text-primary hover:underline">Register your interest</Link></p></Card>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">{forRent.map((v) => <VehicleCard key={v.id} vehicle={v} />)}</div>
         )}
       </section>
 
-      {/* WHY US */}
       <section className="container py-20 border-t border-border/40">
         <div className="text-center mb-14 max-w-2xl mx-auto">
-          <span className="text-xs uppercase tracking-widest text-primary">Why AurumMotors</span>
+          <span className="text-xs uppercase tracking-widest text-primary">Why My Ride Dtk</span>
           <h2 className="text-4xl md:text-5xl font-serif mt-3 mb-4">One platform. Two ways to drive.</h2>
           <p className="text-muted-foreground">Verified dealers and owners, transparent pricing, financing on every listing, and protected bookings for every rental.</p>
         </div>
