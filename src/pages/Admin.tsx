@@ -12,7 +12,7 @@ import { Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { formatKES } from "@/lib/finance";
 
-const ALL_ROLES = ["admin", "dealer", "customer"] as const;
+const ALL_ROLES = ["admin", "dealer", "owner", "lender", "driver", "customer"] as const;
 type AppRole = typeof ALL_ROLES[number];
 
 const Admin = () => {

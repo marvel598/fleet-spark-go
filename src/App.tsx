@@ -21,6 +21,7 @@ import DealerVehicleEdit from "./pages/DealerVehicleEdit.tsx";
 import OwnerHub from "./pages/OwnerHub.tsx";
 import OwnerVehicleEdit from "./pages/OwnerVehicleEdit.tsx";
 import Admin from "./pages/Admin.tsx";
+import LenderHub from "./pages/LenderHub.tsx";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
           <Route path="/owner" element={<OwnerHub />} />
           <Route path="/owner/vehicles/:id" element={<OwnerVehicleEdit />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/lender" element={<LenderHub />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

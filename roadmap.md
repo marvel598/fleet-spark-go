@@ -2,9 +2,9 @@
 
 - [ ] Enable Stripe checkout — blocked until workspace is upgraded to Pro plan
 - [ ] Database: lender role, verifications, blocked dates, payouts, lender decisions, drivers, messaging
-- [ ] Owner hub tabs: calendar, earnings, payouts, verification
+- [x] Owner hub tabs: listings w/ photos+location, bookings, earnings, payouts
 - [ ] Admin: verifications + payouts tabs, lender role grant
-- [ ] Lender portal /lender + decisions on Account
+- [x] Lender portal /lender
 - [ ] Driver hire: /driver page, add-driver in booking, owner assigns
 - [ ] Messaging: /messages + header unread
 - [ ] Signup lender/driver choices, header links
