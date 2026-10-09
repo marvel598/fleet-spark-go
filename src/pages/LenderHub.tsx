@@ -92,7 +92,7 @@ const LenderHub = () => {
 
   return (
     <Layout>
-      <Seo title="Lender hub — AurumMotors" description="Review car loan applications." path="/lender" noindex />
+      <Seo title="Lender hub — Quick Ride" description="Review car loan applications." path="/lender" noindex />
       <div className="container py-10">
         <h1 className="text-4xl font-serif mb-1">Lender hub</h1>
         <p className="text-muted-foreground mb-8">Review car loan applications and send decisions</p>

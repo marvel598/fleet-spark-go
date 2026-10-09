@@ -10,3 +10,8 @@
 - [ ] Signup lender/driver choices, header links
 - [ ] AI car recommender for renters (dates, pickup, passengers, preferences → AI picks from available listings)
 - [ ] Security scan + verification
+
+## Current request
+- [ ] Rename public branding and SEO to Quick Ride
+- [ ] Add a live customer dashboard while retaining existing role hubs
+- [ ] Verify dashboard access, navigation, and rename

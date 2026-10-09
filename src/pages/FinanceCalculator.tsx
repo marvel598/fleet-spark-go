@@ -27,7 +27,7 @@ const FinanceCalculator = () => {
 
   return (
     <Layout>
-      <Seo title="Car Finance Calculator — AurumMotors" description="Estimate monthly car payments, total interest and full loan cost in seconds." path="/finance/calculator" />
+      <Seo title="Car Finance Calculator — Quick Ride" description="Estimate monthly car payments, total interest and full loan cost in seconds." path="/finance/calculator" />
       <div className="container max-w-5xl py-12">
         <div className="flex items-center gap-3 mb-2 text-primary"><Calculator className="w-5 h-5" /><span className="text-xs uppercase tracking-widest">Finance</span></div>
         <h1 className="text-4xl md:text-5xl font-serif mb-2">Finance calculator</h1>

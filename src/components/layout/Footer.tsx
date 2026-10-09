@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
 import { Car, MessageCircle, Mail } from "lucide-react";
 
-const whatsappLink = "https://wa.me/254706075259?text=Hello%20My%20Ride%20Dtk%2C%20I%20would%20like%20to%20enquire%20about%20your%20cars.";
-const emailAddress = "hello@myridedtk.com";
+const whatsappLink = "https://wa.me/254706075259?text=Hello%20Quick%20Ride%2C%20I%20would%20like%20to%20enquire%20about%20your%20cars.";
+const emailAddress = "marvelbravin@gmail.com";
 
 export function Footer() {
   return (
@@ -13,7 +13,7 @@ export function Footer() {
             <div className="w-8 h-8 rounded-md bg-gradient-gold flex items-center justify-center">
               <Car className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
             </div>
-            <span className="font-serif text-xl font-semibold">My Ride <span className="text-primary">Dtk</span></span>
+            <span className="font-serif text-xl font-semibold">Quick <span className="text-primary">Ride</span></span>
           </div>
           <p className="text-sm text-muted-foreground max-w-sm leading-relaxed">
             The premium marketplace for buying, renting and financing quality vehicles across Kenya — backed by trusted dealers, transparent pricing and flexible support.
@@ -51,7 +51,7 @@ export function Footer() {
       </div>
 
       <div className="container py-6 border-t border-border/40 text-xs text-muted-foreground flex flex-col sm:flex-row justify-between gap-2">
-        <span>© {new Date().getFullYear()} My Ride Dtk. All rights reserved.</span>
+        <span>© {new Date().getFullYear()} Quick Ride. All rights reserved.</span>
         <span>Crafted with care.</span>
       </div>
     </footer>

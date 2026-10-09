@@ -77,7 +77,7 @@ const OwnerHub = () => {
     <Layout>
       <div className="container py-20 text-center max-w-lg">
         <h1 className="font-serif text-3xl mb-3">Become a host</h1>
-        <p className="text-muted-foreground mb-6">List your vehicle on AurumMotors and earn from rentals.</p>
+        <p className="text-muted-foreground mb-6">List your vehicle on Quick Ride and earn from rentals.</p>
         <Button variant="hero" asChild><Link to="/signup">Sign up as a host</Link></Button>
       </div>
     </Layout>
@@ -90,7 +90,7 @@ const OwnerHub = () => {
 
   return (
     <Layout>
-      <Seo title="Owner hub — AurumMotors" description="Manage your rental listings and bookings." path="/owner" noindex />
+      <Seo title="Owner hub — Quick Ride" description="Manage your rental listings and bookings." path="/owner" noindex />
       <div className="container py-10">
         <div className="flex flex-wrap gap-4 items-center justify-between mb-8">
           <div>

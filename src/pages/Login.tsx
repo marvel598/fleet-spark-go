@@ -37,7 +37,7 @@ const Login = () => {
   const [otpSent, setOtpSent] = useState(false);
 
   useEffect(() => {
-    if (user) navigate("/account", { replace: true });
+    if (user) navigate("/dashboard", { replace: true });
   }, [user, navigate]);
 
   const handleEmailLogin = async (e: React.FormEvent) => {
@@ -49,7 +49,7 @@ const Login = () => {
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Welcome back");
-    navigate("/account");
+    navigate("/dashboard");
   };
 
   const handleGoogle = async () => {
@@ -59,7 +59,7 @@ const Login = () => {
     });
     if (result.error) { toast.error(result.error.message ?? "Sign-in failed"); setLoading(false); return; }
     if (result.redirected) return;
-    navigate("/account");
+    navigate("/dashboard");
   };
 
   const sendOtp = async () => {
@@ -81,7 +81,7 @@ const Login = () => {
     setLoading(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Welcome");
-    navigate("/account");
+    navigate("/dashboard");
   };
 
   return (
@@ -92,7 +92,7 @@ const Login = () => {
             <Car className="w-7 h-7 text-primary-foreground" strokeWidth={2.5} />
           </div>
           <h1 className="text-4xl font-serif mb-2">Welcome back</h1>
-          <p className="text-muted-foreground">Sign in to your AurumDrive account</p>
+          <p className="text-muted-foreground">Sign in to your Quick Ride account</p>
         </div>
 
         <Card className="p-8 bg-card/60 backdrop-blur border-border/60 shadow-elevated animate-fade-in">
@@ -158,7 +158,7 @@ const Login = () => {
         </Card>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          New to AurumDrive? <Link to="/signup" className="text-primary hover:underline">Create an account</Link>
+          New to Quick Ride? <Link to="/signup" className="text-primary hover:underline">Create an account</Link>
         </p>
       </div>
     </Layout>

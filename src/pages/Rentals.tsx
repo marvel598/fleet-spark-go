@@ -65,7 +65,7 @@ const Rentals = () => {
 
   return (
     <Layout>
-      <Seo title="Rent a car — AurumMotors" description="Browse cars for rent across Kenya. Daily rates, transparent fees, protected bookings." path="/rentals" />
+      <Seo title="Rent a car — Quick Ride" description="Browse cars for rent across Kenya. Daily rates, transparent fees, protected bookings." path="/rentals" />
       <div className="container py-12">
         <h1 className="text-4xl md:text-5xl font-serif mb-2">Cars for rent</h1>
         <p className="text-muted-foreground mb-8">{vehicles.length} vehicles available</p>

@@ -198,7 +198,7 @@ const VehicleDetail = () => {
   return (
     <Layout>
       <Seo
-        title={`${vehicle.year} ${vehicle.make} ${vehicle.model} — AurumMotors`}
+        title={`${vehicle.year} ${vehicle.make} ${vehicle.model} — Quick Ride`}
         description={`${vehicle.condition ?? ""} ${vehicle.year} ${vehicle.make} ${vehicle.model} — ${formatKES(Number(vehicle.price))}. ${vehicle.description?.slice(0, 100) ?? ""}`}
         path={`/vehicle/${vehicle.id}`}
         jsonLd={jsonLd}

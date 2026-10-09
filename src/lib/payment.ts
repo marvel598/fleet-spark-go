@@ -106,3 +106,11 @@ export function buildPayoutInstruction({
     scheduledDate: new Date().toISOString(),
   };
 }
+
+// Manual booking payments; receipt submission is not payment confirmation.
+export const PAYMENT_INSTRUCTIONS = {
+  method: "mpesa",
+  phone: "0706075259",
+  name: "Quick Ride",
+  steps: ["Open M-Pesa and choose Send Money.", "Send the booking total to 0706075259.", "Submit your M-Pesa transaction code for the host to verify."],
+};

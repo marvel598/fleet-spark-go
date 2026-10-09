@@ -97,16 +97,15 @@ const Index = () => {
   return (
     <Layout>
       <Seo
-        title="My Ride Dtk — Buy, Rent & Finance Cars in Kenya | Premium Marketplace"
+        title="Quick Ride — Buy, Rent & Finance Cars in Kenya | Premium Marketplace"
         description="Kenya's #1 car marketplace. Buy new/used vehicles, rent cars by the day, or hire drivers. Verified dealers, instant financing, 24/7 support. 150K+ happy users."
         path="/"
-        image="https://myridedtk.com/og-image.jpg"
       />
 
       {/* ============ HERO SECTION ============ */}
       <section className="relative min-h-[92vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroCar} alt="Premium luxury vehicles at My Ride Dtk" width={1920} height={1080} fetchPriority="high" className="w-full h-full object-cover opacity-50" />
+          <img src={heroCar} alt="Premium luxury vehicles at Quick Ride" width={1920} height={1080} fetchPriority="high" className="w-full h-full object-cover opacity-50" />
           <div className="absolute inset-0 bg-gradient-hero-fade" />
           <div className="absolute inset-0 bg-gradient-radial-gold" />
         </div>
@@ -219,7 +218,7 @@ const Index = () => {
       {/* ============ WHY CHOOSE US (6-POINT GRID) ============ */}
       <section className="container py-20 border-t border-border/40">
         <div className="mb-16">
-          <span className="text-xs uppercase tracking-widest text-primary font-semibold block mb-3">✨ Why My Ride Dtk</span>
+          <span className="text-xs uppercase tracking-widest text-primary font-semibold block mb-3">✨ Why Quick Ride</span>
           <h2 className="text-4xl md:text-5xl font-serif mb-4">The Best Platform for Every Driver</h2>
           <p className="text-muted-foreground text-lg max-w-2xl">We combine verified sellers, transparent pricing, instant financing, and 24/7 support to make car buying and renting effortless.</p>
         </div>
@@ -315,7 +314,7 @@ const Index = () => {
         <Card className="p-12 md:p-16 bg-gradient-gold-soft border border-primary/20 relative overflow-hidden">
           <div className="relative z-10">
             <h2 className="text-4xl md:text-5xl font-serif mb-4">Ready to find your next car?</h2>
-            <p className="text-lg text-muted-foreground mb-8 max-w-2xl">Join 150,000+ happy users who've found their perfect ride on My Ride Dtk. Start your journey today.</p>
+            <p className="text-lg text-muted-foreground mb-8 max-w-2xl">Join 150,000+ happy users who've found their perfect ride on Quick Ride. Start your journey today.</p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" variant="gold" asChild className="h-14 font-semibold">
                 <Link to="/signup">Sign Up Free</Link>
@@ -337,7 +336,7 @@ const Index = () => {
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {[
             {
-              q: "Is My Ride Dtk safe and verified?",
+              q: "Is Quick Ride safe and verified?",
               a: "Yes! Every seller is verified, every car is inspected, and every transaction is protected by escrow.",
             },
             {

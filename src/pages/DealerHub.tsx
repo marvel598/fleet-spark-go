@@ -107,7 +107,7 @@ const DealerHub = () => {
   if (!dealer) {
     return (
       <Layout>
-        <Seo title="Dealer Hub — AurumMotors" description="Set up your dealership profile." path="/dealer" noindex />
+        <Seo title="Dealer Hub — Quick Ride" description="Set up your dealership profile." path="/dealer" noindex />
         <div className="container max-w-2xl py-12">
           <h1 className="text-4xl font-serif mb-2">Set up your dealership</h1>
           <p className="text-muted-foreground mb-8">Tell shoppers about your business before listing inventory.</p>
@@ -143,7 +143,7 @@ const DealerHub = () => {
 
   return (
     <Layout>
-      <Seo title="Dealer Hub — AurumMotors" description="Manage inventory and leads." path="/dealer" noindex />
+      <Seo title="Dealer Hub — Quick Ride" description="Manage inventory and leads." path="/dealer" noindex />
       <div className="container py-10">
         <div className="flex flex-wrap items-end justify-between gap-4 mb-6">
           <div>

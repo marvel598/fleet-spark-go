@@ -15,6 +15,7 @@ const navItems = [
   { to: "/dealer", label: "Dealer Hub", requireRole: "dealer" as const },
   { to: "/owner", label: "Owner Hub", requireRole: "owner" as const },
   { to: "/lender", label: "Lender Hub", requireRole: "lender" as const },
+  { to: "/dashboard", label: "Dashboard", requireAuth: true },
   { to: "/trips", label: "My Trips", requireAuth: true },
   { to: "/payouts", label: "Payouts", requireAuth: true },
   { to: "/account", label: "Account", requireAuth: true },
@@ -40,11 +41,11 @@ export function Header() {
             <Car className="w-5 h-5 text-primary-foreground" strokeWidth={2.5} />
           </div>
           <span className="font-serif text-2xl font-semibold tracking-tight">
-            My Ride <span className="text-primary">Dtk</span>
+            Quick <span className="text-primary">Ride</span>
           </span>
         </Link>
 
-        <nav className="hidden md:flex items-center gap-5">
+        <nav className="hidden xl:flex items-center gap-3 flex-wrap">
           {visibleItems.map((item) => (
             <Link
               key={item.to}
@@ -59,7 +60,7 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden xl:flex items-center gap-3">
           {user ? (
             <>
               <NotificationsBell />
@@ -82,13 +83,13 @@ export function Header() {
           )}
         </div>
 
-        <button className="md:hidden text-foreground" onClick={() => setOpen(!open)} aria-label="Menu">
+        <Button variant="ghost" size="icon" className="xl:hidden shrink-0" onClick={() => setOpen(!open)} aria-label="Menu" aria-expanded={open}>
           {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
+        </Button>
       </div>
 
       {open && (
-        <div className="md:hidden border-t border-border/60 bg-background/95 backdrop-blur-xl animate-fade-in">
+        <div className="xl:hidden border-t border-border/60 bg-background/95 backdrop-blur-xl animate-fade-in">
           <div className="container py-4 flex flex-col gap-3">
             {visibleItems.map((item) => (
               <Link key={item.to} to={item.to} onClick={() => setOpen(false)} className="py-2 text-sm text-muted-foreground hover:text-primary">
@@ -96,6 +97,7 @@ export function Header() {
               </Link>
             ))}
             <div className="pt-3 border-t border-border/40 flex flex-col gap-2">
+              {hasRole("admin") && <Button variant="ghost" size="sm" asChild><Link to="/admin" onClick={() => setOpen(false)}>Admin</Link></Button>}
               {user ? (
                 <Button variant="outlineGold" size="sm" onClick={async () => { await signOut(); setOpen(false); navigate("/"); }}>Sign out</Button>
               ) : (

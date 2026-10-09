@@ -40,7 +40,7 @@ const Account = () => {
 
   return (
     <Layout>
-      <Seo title="My Account — AurumMotors" description="Saved vehicles, inquiries and finance applications." path="/account" noindex />
+      <Seo title="My Account — Quick Ride" description="Saved vehicles, inquiries and finance applications." path="/account" noindex />
       <div className="container py-12">
         <h1 className="text-4xl md:text-5xl font-serif mb-8">My account</h1>
         <Tabs defaultValue="saved">

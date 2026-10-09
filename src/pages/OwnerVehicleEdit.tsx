@@ -123,7 +123,7 @@ const OwnerVehicleEdit = () => {
 
   return (
     <Layout>
-      <Seo title={isNew ? "List a rental — AurumMotors" : "Edit rental — AurumMotors"} description="Add or edit your rental listing." path="/owner/vehicles" noindex />
+      <Seo title={isNew ? "List a rental — Quick Ride" : "Edit rental — Quick Ride"} description="Add or edit your rental listing." path="/owner/vehicles" noindex />
       <div className="container max-w-3xl py-10">
         <h1 className="text-4xl font-serif mb-8">{isNew ? "List a car for rent" : "Edit rental listing"}</h1>
         <form onSubmit={submit} className="space-y-6">
