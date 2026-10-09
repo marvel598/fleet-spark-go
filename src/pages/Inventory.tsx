@@ -85,7 +85,7 @@ const Inventory = () => {
 
   return (
     <Layout>
-      <Seo title="Browse Inventory — AurumMotors" description="Filter thousands of vehicles by make, model, year, price, mileage, fuel and transmission." path="/inventory" />
+      <Seo title="Browse Inventory — Quick Ride" description="Filter thousands of vehicles by make, model, year, price, mileage, fuel and transmission." path="/inventory" />
       <div className="container py-12">
         <h1 className="text-4xl md:text-5xl font-serif mb-2">Browse inventory</h1>
         <p className="text-muted-foreground mb-8">{vehicles.length} vehicles available</p>

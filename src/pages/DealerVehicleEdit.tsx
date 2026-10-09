@@ -119,7 +119,7 @@ const DealerVehicleEdit = () => {
 
   return (
     <Layout>
-      <Seo title={isNew ? "List a vehicle — AurumMotors" : "Edit vehicle — AurumMotors"} description="Add or edit a vehicle in your inventory." path="/dealer/vehicles" noindex />
+      <Seo title={isNew ? "List a vehicle — Quick Ride" : "Edit vehicle — Quick Ride"} description="Add or edit a vehicle in your inventory." path="/dealer/vehicles" noindex />
       <div className="container max-w-3xl py-10">
         <h1 className="text-4xl font-serif mb-8">{isNew ? "List a vehicle" : "Edit vehicle"}</h1>
         <form onSubmit={submit} className="space-y-6">

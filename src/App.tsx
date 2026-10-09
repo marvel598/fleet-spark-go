@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,7 +15,7 @@ import Compare from "./pages/Compare.tsx";
 import Reviews from "./pages/Reviews.tsx";
 import FinanceCalculator from "./pages/FinanceCalculator.tsx";
 import Account from "./pages/Account.tsx";
-import Payouts from "./pages/Payouts.tsx";
+import CustomerDashboard from "./pages/CustomerDashboard.tsx";
 import Trips from "./pages/Trips.tsx";
 import DealerHub from "./pages/DealerHub.tsx";
 import DealerVehicleEdit from "./pages/DealerVehicleEdit.tsx";
@@ -44,7 +44,8 @@ const App = () => (
           <Route path="/reviews" element={<Reviews />} />
           <Route path="/finance/calculator" element={<FinanceCalculator />} />
           <Route path="/account" element={<Account />} />
-          <Route path="/payouts" element={<Payouts />} />
+          <Route path="/dashboard" element={<CustomerDashboard />} />
+          <Route path="/payouts" element={<Navigate to="/owner" replace />} />
           <Route path="/trips" element={<Trips />} />
           <Route path="/dealer" element={<DealerHub />} />
           <Route path="/dealer/vehicles/:id" element={<DealerVehicleEdit />} />

@@ -1,8 +1,12 @@
-# AurumDrive
+# Quick Ride
 
-> A premium peer-to-peer car hire marketplace. Renters book vetted vehicles from verified owners; owners list cars and manage trips with escrow-protected payments and live tracking.
+> A Kenyan marketplace for buying, renting, and financing vehicles.
 
 ## Pages
 
-- [Home](/): What AurumDrive is and how it works.
-- [Browse cars](/browse): Search the marketplace for cars by make, model, location, transmission and price.
+- [Home](/): Quick Ride car marketplace.
+- [Buy cars](/inventory): Vehicles for sale.
+- [Rent cars](/rentals): Car hire listings with daily rates and locations.
+- [Compare](/compare): Compare vehicles.
+- [Reviews](/reviews): Expert vehicle reviews.
+- [Finance calculator](/finance/calculator): Estimate vehicle financing.

@@ -8,4 +8,4 @@ Disallow: /my-bookings
 Disallow: /trips
 Disallow: /list-car
 
-Sitemap: https://myridedtk.com/sitemap.xml
+Sitemap: https://nairobicarehire-com.lovable.app/sitemap.xml

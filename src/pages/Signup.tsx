@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 
 const roleOptions = [
-  { id: "customer", title: "Buy a car", desc: "Browse, compare and finance vehicles", Icon: ShoppingBag, dest: "/account" },
+  { id: "customer", title: "Buy a car", desc: "Browse, compare and finance vehicles", Icon: ShoppingBag, dest: "/dashboard" },
   { id: "dealer",   title: "Sell vehicles", desc: "List dealership inventory + leads", Icon: Briefcase, dest: "/dealer" },
   { id: "renter",   title: "Rent a car", desc: "Book vehicles for trips and travel", Icon: KeyRound, dest: "/rentals" },
   { id: "owner",    title: "Host my car", desc: "Earn by renting out your vehicle", Icon: Home, dest: "/owner" },
@@ -38,9 +38,9 @@ const Signup = () => {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<RoleId>("customer");
 
-  useEffect(() => { if (user) navigate("/account", { replace: true }); }, [user, navigate]);
+  useEffect(() => { if (user) navigate("/dashboard", { replace: true }); }, [user, navigate]);
 
-  const dest = (r: RoleId) => roleOptions.find((o) => o.id === r)!.dest;
+  const dest = (r: RoleId) => roleOptions.find((o) => o.id === r)?.dest ?? "/dashboard";
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,7 +57,7 @@ const Signup = () => {
     });
     setLoading(false);
     if (error) { toast.error(error.message); return; }
-    toast.success("Account created — welcome to AurumMotors");
+    toast.success("Account created — welcome to Quick Ride");
     navigate(dest(role));
   };
 
@@ -79,7 +79,7 @@ const Signup = () => {
           <div className="inline-flex w-14 h-14 rounded-xl bg-gradient-gold items-center justify-center shadow-gold mb-6">
             <Car className="w-7 h-7 text-primary-foreground" strokeWidth={2.5} />
           </div>
-          <h1 className="text-4xl font-serif mb-2">Join AurumMotors</h1>
+          <h1 className="text-4xl font-serif mb-2">Join Quick Ride</h1>
           <p className="text-muted-foreground">Choose how you want to get started</p>
         </div>
 

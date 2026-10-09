@@ -117,7 +117,7 @@ const Trips = () => {
 
   return (
     <Layout>
-      <Seo title="My trips — AurumMotors" description="Your rental bookings and history." path="/trips" noindex />
+      <Seo title="My trips — Quick Ride" description="Your rental bookings and history." path="/trips" noindex />
       <div className="container py-12">
         <div className="flex items-center justify-between mb-8">
           <div>

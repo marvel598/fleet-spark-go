@@ -96,7 +96,7 @@ const Admin = () => {
 
   return (
     <Layout>
-      <Seo title="Admin console — AurumMotors" description="Platform administration." path="/admin" noindex />
+      <Seo title="Admin console — Quick Ride" description="Platform administration." path="/admin" noindex />
       <div className="container py-12">
         <div className="flex items-center gap-3 mb-2">
           <ShieldCheck className="w-5 h-5 text-primary" />

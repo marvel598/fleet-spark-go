@@ -83,7 +83,7 @@ const Compare = () => {
 
   return (
     <Layout>
-      <Seo title="Compare Vehicles — AurumMotors" description="Compare up to 4 vehicles side-by-side: price, specs, features." path="/compare" />
+      <Seo title="Compare Vehicles — Quick Ride" description="Compare up to 4 vehicles side-by-side: price, specs, features." path="/compare" />
       <div className="container py-12">
         <h1 className="text-4xl md:text-5xl font-serif mb-2">Compare vehicles</h1>
         <p className="text-muted-foreground mb-8">Add up to 4 vehicles to see them side by side.</p>

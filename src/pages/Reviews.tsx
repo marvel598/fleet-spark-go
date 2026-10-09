@@ -31,7 +31,7 @@ const Reviews = () => {
 
   return (
     <Layout>
-      <Seo title="Expert Vehicle Reviews — AurumMotors" description="In-depth expert reviews to help you choose the right vehicle." path="/reviews" />
+      <Seo title="Expert Vehicle Reviews — Quick Ride" description="In-depth expert reviews to help you choose the right vehicle." path="/reviews" />
       <div className="container py-12">
         <h1 className="text-4xl md:text-5xl font-serif mb-2">Expert reviews</h1>
         <p className="text-muted-foreground mb-10">Honest takes from our editorial team.</p>
