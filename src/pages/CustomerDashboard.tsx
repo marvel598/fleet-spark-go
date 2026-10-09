@@ -15,7 +15,7 @@ import { customerBookingSummary } from "@/lib/customer-dashboard";
 
 async function loadDashboard(userId: string) {
   const [bookings, inquiries, finances, saved, notifications] = await Promise.all([
-    supabase.from("bookings").select("id,vehicle_id,start_date,end_date,status,total,paid_at,payment_reference,vehicles(make,model,year,photos,location)").eq("renter_id", userId).order("created_at", { ascending: false }),
+    supabase.from("bookings").select("id,vehicle_id,start_date,end_date,status,total,paid_at,payment_reference").eq("renter_id", userId).order("created_at", { ascending: false }),
     supabase.from("inquiries").select("id,vehicle_id,type,status,preferred_date,created_at,vehicles(make,model,year,photos,location)").eq("user_id", userId).order("created_at", { ascending: false }),
     supabase.from("finance_applications").select("id,vehicle_id,status,monthly_payment,term_months,apr,vehicles(make,model,year),lender_decisions(id,decision,offered_apr,offered_term_months,note,created_at)").eq("user_id", userId).order("created_at", { ascending: false }),
     supabase.from("saved_vehicles").select("id,vehicles(id,make,model,year,price,photos,location,status,listing_type,daily_rate)").eq("user_id", userId).order("created_at", { ascending: false }),
@@ -24,7 +24,16 @@ async function loadDashboard(userId: string) {
   for (const response of [bookings, inquiries, finances, saved, notifications]) {
     if (response.error) throw response.error;
   }
-  return { bookings: bookings.data ?? [], inquiries: inquiries.data ?? [], finances: finances.data ?? [], saved: saved.data ?? [], notifications: notifications.data ?? [] };
+  const vehicleIds = [...new Set((bookings.data ?? []).map((booking) => booking.vehicle_id))];
+  const vehicles = vehicleIds.length
+    ? await supabase.from("vehicles").select("id,make,model,year,photos,location").in("id", vehicleIds)
+    : { data: [], error: null };
+  if (vehicles.error) throw vehicles.error;
+  const bookingVehicles = new Map((vehicles.data ?? []).map((vehicle) => [vehicle.id, vehicle]));
+  return {
+    bookings: (bookings.data ?? []).map((booking) => ({ ...booking, vehicles: bookingVehicles.get(booking.vehicle_id) ?? null })),
+    inquiries: inquiries.data ?? [], finances: finances.data ?? [], saved: saved.data ?? [], notifications: notifications.data ?? [],
+  };
 }
 
 function VehiclePhoto({ photo, name }: { photo?: string; name: string }) {
