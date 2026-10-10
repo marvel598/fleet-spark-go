@@ -15,3 +15,8 @@
 - [ ] Rename public branding and SEO to Quick Ride
 - [ ] Add a live customer dashboard while retaining existing role hubs
 - [ ] Verify dashboard access, navigation, and rename
+
+## New tasks (Oct 10)
+- [ ] AI trip-planner car recommender (AI Gateway, in progress)
+- [ ] Pickup directions: customer start point → car pickup location on map
+- [ ] Save cars from the map; browse favorites later
