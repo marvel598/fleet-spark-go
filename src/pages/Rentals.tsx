@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, SlidersHorizontal, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { VehicleCard, type VehicleSummary } from "@/components/vehicles/VehicleCard";
+import { ListingsMap } from "@/components/vehicles/ListingsMap";
 
 const bodyTypes = ["sedan", "suv", "hatchback", "coupe", "convertible", "wagon", "pickup", "van", "minivan", "crossover"];
 const transmissions = ["automatic", "manual", "cvt", "dct"];
@@ -112,6 +113,7 @@ const Rentals = () => {
           </Card>
 
           <div>
+            {!loading && vehicles.length > 0 && <ListingsMap vehicles={vehicles} />}
             <div className="flex items-center justify-between mb-4">
               <div className="text-sm text-muted-foreground">Sorted by</div>
               <Select value={sort} onValueChange={setSort}>
