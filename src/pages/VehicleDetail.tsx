@@ -18,6 +18,7 @@ import {
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { LocationMap } from "@/components/vehicles/LocationMap";
 import { VehicleCard, type VehicleSummary } from "@/components/vehicles/VehicleCard";
 import { calcMonthlyPayment, formatKES } from "@/lib/finance";
 import { BookingWidget } from "@/components/bookings/BookingWidget";
@@ -289,6 +290,7 @@ const VehicleDetail = () => {
                       </div>
                     ))}
                   </dl>
+                  <LocationMap location={vehicle.location} />
                 </Card>
               </TabsContent>
               <TabsContent value="features" className="mt-4">
