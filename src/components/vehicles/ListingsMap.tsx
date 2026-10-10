@@ -71,8 +71,8 @@ export function ListingsMap({ vehicles }: { vehicles: VehicleSummary[] }) {
   useEffect(() => {
     if (!KEY || !ref.current) return;
     let cancelled = false;
-    let map: google.maps.Map | null = null;
-    const markers: google.maps.Marker[] = [];
+    let map: any = null;
+    const markers: any[] = [];
 
     loadMaps()
       .then(() => {
