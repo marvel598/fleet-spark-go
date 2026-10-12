@@ -20,3 +20,5 @@
 - [ ] AI trip-planner car recommender (AI Gateway, in progress)
 - [ ] Pickup directions: customer start point → car pickup location on map
 - [ ] Save cars from the map; browse favorites later
+
+- [ ] Real-time maps link + M-Pesa STK push, PayPal and bank account payments (needs M-Pesa Daraja credentials / details from user)
