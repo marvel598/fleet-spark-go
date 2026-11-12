@@ -22,3 +22,6 @@
 - [ ] Save cars from the map; browse favorites later
 
 - [ ] Real-time maps link + M-Pesa STK push, PayPal and bank account payments (needs M-Pesa Daraja credentials / details from user)
+
+## Current request (Nov 12)
+- [ ] Deep audit and complete missing/failing Quick Ride flows: M-Pesa Daraja (0706075259), booking, rental/customer/owner/admin dashboards, maps, backend and frontend security; clarify whether “bnb dashboard” means the booking/rental dashboard.
